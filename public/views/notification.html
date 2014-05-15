@@ -1,0 +1,43 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | Notifications</li>
+    </ul>
+</div>
+<div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Submit Time</th>
+            <th>Type</th>
+            <th>Message</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in notifications | orderBy: ['-id']" class="">
+            <td>
+                {{item.id}}
+            </td>
+            <td>
+                {{item.id | date:"MM-dd HH:mm:ss"}}
+            </td>
+            <td>
+                {{item.type}}
+            </td>
+            <td>
+                {{item.message}}
+            </td>
+            <td>
+                <button class="btn btn-danger" ng-click="remove(item.id)" >Remove</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <textarea ng-model="message" required rows="3" cols="60"></textarea>
+</div>
+<div>
+    <button class="btn btn-success" ng-click="add()">Add</button>
+</div>

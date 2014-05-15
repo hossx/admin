@@ -30,6 +30,28 @@ object Admin extends Controller with Json4s {
       }
   }
 
+  def notifications() = Action {
+    implicit request =>
+      val result = NotificationService.getNotifications()
+      Ok(result.toJson)
+  }
+
+  def addNotification() = Action(parse.urlFormEncoded) {
+    implicit request =>
+      val data = request.body
+      val message = ControllerHelper.getParam(data, "message", "")
+      val id = System.currentTimeMillis()
+      val notification = Notification(id, NotificationType.Warning, message)
+      NotificationService.addNotification(notification)
+      Ok(ApiResult.toJson)
+  }
+
+  def removeNotification(id: String) = Action {
+    implicit request =>
+      NotificationService.removeNotification(id.toLong)
+      Ok(ApiResult.toJson)
+  }
+
   private def getParam(queryString: Map[String, Seq[String]], param: String): Option[String] = {
     queryString.get(param).map(_(0))
   }
