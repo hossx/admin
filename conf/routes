@@ -1,9 +1,8 @@
 GET     /                             controllers.Admin.index
 GET     /deposit                      controllers.Admin.deposit
 
-GET     /notifications                controllers.Admin.notifications
-POST    /notifications/add            controllers.Admin.addNotification
-POST    /notifications/remove/*id     controllers.Admin.removeNotification(id)
+GET     /notifications/get            controllers.Admin.getNotifications()
+POST    /notifications/set            controllers.Admin.setNotification()
 
 # Default path to /public
 GET     /*file                        controllers.Assets.at(path="/public", file)

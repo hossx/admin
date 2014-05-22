@@ -31,25 +31,33 @@ app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
 }]);
 
 app.controller('NotifyCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.ntypes = [
+    {text: 'Warning', value: 'Warning'},
+    {text: 'Danger', value: 'Danger'},
+    {text: 'Success', value: 'Success'},
+    {text: 'Info', value: 'Info'}];
+
+    $scope.notification = {}
+    $scope.notification.ntype = "Info"
+
     $scope.reload = function() {
-        $http.get('/notifications', {params: {}})
+        $http.get('/notifications/get', {params: {}})
           .success(function(data, status, headers, config) {
-            $scope.notifications = data.data;
-            console.log(data);
+            $scope.notifications = data.data.items;
         })
     };
 
-    $scope.add = function() {
-        var payload = {message: $scope.message};
-        $http.post('/notifications/add', $.param(payload))
+    $scope.save = function() {
+        $http.post('/notifications/set', $.param($scope.notification))
           .success(function(data, status, headers, config) {
-            console.log('request:', payload, ' response:', data);
+            console.log('request:', $scope.notification, ' response:', data);
             $scope.reload();
         });
     };
 
-    $scope.remove = function(id) {
-        $http.post('/notifications/remove/' + id)
+    $scope.remove = function(item) {
+        item.removed = true
+        $http.post('/notifications/set', $.param(item))
           .success(function(data, status, headers, config) {
             $scope.reload();
         });

@@ -8,36 +8,35 @@
         <thead>
         <tr>
             <th>ID</th>
-            <th>Submit Time</th>
-            <th>Type</th>
-            <th>Message</th>
-            <th></th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Notification Type</th>
+            <th>Removed</th>
+            <th>Created</th>
+            <th>Updated</th>
         </tr>
         </thead>
         <tbody>
         <tr ng-repeat="item in notifications | orderBy: ['-id']" class="">
-            <td>
-                {{item.id}}
-            </td>
-            <td>
-                {{item.id | date:"MM-dd HH:mm:ss"}}
-            </td>
-            <td>
-                {{item.type}}
-            </td>
-            <td>
-                {{item.message}}
-            </td>
-            <td>
-                <button class="btn btn-danger" ng-click="remove(item.id)" >Remove</button>
-            </td>
+            <td> {{item.id}} </td>
+            <td> {{item.title}} </td>
+            <td> {{item.content}} </td>
+            <td> {{item.ntype}} </td>
+            <td> {{item.removed}} </td>
+            <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
+            <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
+            <td> <button class="btn btn-danger" ng-click="remove(item)" >Remove</button> </td>
         </tr>
         </tbody>
     </table>
 </div>
 <div>
-    <textarea ng-model="message" required rows="3" cols="60"></textarea>
+    <tr>
+    <input type="string" name="title" class="form-control" placeholder='title' ng-model="notification.title"  required>
+    <input type="string" name="content" class="form-control" placeholder='content' ng-model="notification.content"  required>
+     <select ng-options="t.value as t.text for t in ntypes" ng-model="notification.ntype"></select>
+    </tr>
 </div>
 <div>
-    <button class="btn btn-success" ng-click="add()">Add</button>
+    <button class="btn btn-success" ng-click="save()">Save</button>
 </div>
