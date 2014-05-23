@@ -1,0 +1,48 @@
+@(form: Form[(String,String)])(implicit flash: Flash, session: Session)
+
+<html>
+    <head>
+        <title>Coinport Admin</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("image/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("css/login.css")">
+    </head>
+    <body>
+
+        <header>
+            <a href="@routes.Admin.index" id="logo"><span>Coin</span>port</a>
+        </header>
+
+        @helper.form(routes.Admin.authenticate) {
+
+            <h1>Sign in</h1>
+
+            @form.globalError.map { error =>
+                <p class="error">
+                    @error.message
+                </p>
+            }
+
+            @flash.get("success").map { message =>
+                <p class="success">
+                    @message
+                </p>
+            }
+
+            <p>
+                <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value">
+            </p>
+            <p>
+                <input type="password" name="password" id="password" placeholder="Password">
+            </p>
+            <p>
+                <button type="submit" id="loginbutton">Login</button>
+            </p>
+
+        }
+
+        <p class="note">
+            2014 © Coinport.
+        </p>
+
+    </body>
+</html>

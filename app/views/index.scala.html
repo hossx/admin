@@ -1,4 +1,4 @@
-@()
+@()(implicit session: Session)
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="image/favicon.png">
 </head>
 <body class="skin-blue" ng-app="coinport.admin">
-@topbar()
+@topbar()(session)
 <div class="container" id="main-container">
 @sidebar()
 <div id="main-content">

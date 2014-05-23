@@ -1,4 +1,10 @@
 GET     /                             controllers.Admin.index
+
+# Authentication
+GET     /login                        controllers.Admin.login
+POST    /login                        controllers.Admin.authenticate
+GET     /logout                       controllers.Admin.logout
+
 GET     /deposit                      controllers.Admin.deposit
 
 GET     /notifications/get            controllers.Admin.getNotifications()
