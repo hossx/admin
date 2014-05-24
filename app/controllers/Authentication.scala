@@ -23,7 +23,7 @@ trait AuthenticateHelper {
       Future (
         Redirect(routes.Admin.login).withNewSession.flashing(
           "success" -> msg
-        )
+        ).withCookies(Cookie(cookieNameTimestamp, System.currentTimeMillis.toString))
       )
     }
   }
