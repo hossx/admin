@@ -52,15 +52,31 @@ object Admin extends Controller with Json4s {
     Ok(views.html.index()(session))
   }
 
-  def transfers(currency: String, uid: String) = Authenticated.async {
+  def getTransfers() = Action.async {
     implicit request =>
       val query = request.queryString
-      val status = getParam(query, "status").map(s => TransferStatus.get(s.toInt).getOrElse(TransferStatus.Succeeded))
-      val types = getParam(query, "type").map(s => TransferType.get(s.toInt).getOrElse(TransferType.Deposit))
-      TransferService.getTransfers(Some(uid.toLong), Some(currency), status, None, types, Cursor(0, 100)) map {
+      val status = getParam(query, "status").map(s => TransferStatus.valueOf(s).getOrElse(TransferStatus.Accepted))
+      val types = getParam(query, "tType").map(s => TransferType.valueOf(s).getOrElse(TransferType.Withdrawal))
+      val currency = getParam(query, "currency").map(s => Currency.valueOf(s).getOrElse(Currency.Btc))
+      val uid = getParam(query, "uid").map(_.toLong)
+      val skip = getParam(query, "skip").map(skip => skip.toInt).getOrElse(0)
+      val limit = getParam(query, "limit").map(limit => limit.toInt).getOrElse(15)
+      TransferService.getTransfers(uid, currency, status, None, types, Cursor(skip, limit)) map {
         case result =>
           Ok(result.toJson)
       }
+  }
+
+  def confirmTransfer(id: String) = Action {
+    implicit request =>
+      TransferService.AdminConfirmTransfer(id.toLong, true)
+      Ok(ApiResult.toJson())
+  }
+
+  def rejectTransfer(id: String) = Action {
+    implicit request =>
+      TransferService.AdminConfirmTransfer(id.toLong, false)
+      Ok(ApiResult.toJson())
   }
 
   def getNotifications() = Authenticated.async {

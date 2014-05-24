@@ -1,0 +1,65 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | 充值管理</li>
+    </ul>
+</div>
+<div>
+        <table class="table">
+            <tbody><tr>
+            <td>
+                <label>Transfer Type</label>
+                <select ng-options="t.value as t.text for t in transferTypes" ng-model="query.tType" class="form-control"></select>
+            </td>
+            <td>
+                <label>Transfer Status</label>
+                <select ng-options="t.value as t.text for t in transferStatus" ng-model="query.status" class="form-control"></select>
+            </td>
+            <td>
+                <label>Currency</label>
+                <select ng-options="t.value as t.text for t in currencyList" ng-model="query.currency" class="form-control"></select>
+            </td>
+            <td>
+                <label>ID</label>
+                <input name='ID' ng-model="query.id" class="form-control" >
+            </td>
+            <td>
+                <label>UID</label>
+                <input name='User Id' ng-model="query.uid" class="form-control" >
+            </td>
+            <td>
+                <button class="buttons" ng-click="loadTransfer()"  class="form-control">Search</button>
+            </td>
+            </tr>
+            </tbody>
+        </table>
+<div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>User Id</th>
+            <th>Currency</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Updated</th>
+            <th>Operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in transfers | orderBy: ['-id']" class="">
+            <td> {{item.id}} </td>
+            <td> {{item.uid}} </td>
+            <td> {{item.amount.currency}} </td>
+            <td> {{item.amount.display}} </td>
+            <td> {{item.status | tStatus}} </td>
+            <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
+            <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
+            <td> {{item.operation | tType}} </td>
+            <td> <button ng-click="confirm(item)" >Confirm</button> </td>
+            <td> <button ng-click="reject(item)" >Reject</button> </td>
+        </tr>
+        </tbody>
+        <pagination boundary-links="true" total-items="snapshots.count" ng-model="snapshotsPage" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+    </table>
+</div>
