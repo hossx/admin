@@ -10,6 +10,7 @@ GET     /deposit                      controllers.Admin.deposit
 GET     /notifications/get            controllers.Admin.getNotifications()
 POST    /notifications/set            controllers.Admin.setNotification()
 
+GET     /monitor/actors/get           controllers.Admin.getActiveActors()
 GET     /transfer/get                 controllers.Admin.getTransfers()
 POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)

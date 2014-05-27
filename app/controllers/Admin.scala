@@ -79,6 +79,14 @@ object Admin extends Controller with Json4s {
       Ok(ApiResult.toJson())
   }
 
+  def getActiveActors() = Action.async {
+    implicit request =>
+      MonitorService.getActorsPath() map {
+        case result =>
+            Ok(result.toJson)
+      }
+  }
+
   def getNotifications() = Authenticated.async {
     implicit request =>
       val skip = 0

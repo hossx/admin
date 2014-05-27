@@ -1,0 +1,23 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | 充值管理</li>
+    </ul>
+</div>
+<div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Actor IP</th>
+            <th>Actor Path</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in pathList | orderBy: ['ip']" class="">
+            <td> {{item.ip}} </td>
+            <td>
+            <span ng-repeat="path in item.actors" class="">{{path}}<br></span>
+
+            </td>
+        </tr>
+        </tbody>
+</div>

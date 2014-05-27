@@ -33,21 +33,26 @@ app.filter('tType', function() {
 
 function routeConfig($routeProvider) {
     $routeProvider.
-    when('/', {
-        controller: 'DashboardCtrl',
-        templateUrl: 'views/dashboard.html'
-    }).
-    when('/notification', {
-        controller: 'NotifyCtrl',
-        templateUrl: 'views/notification.html'
-    }).
-    when('/deposit', {
-        controller: 'TransferCtrl',
-        templateUrl: 'views/transfer.html'
-    }).
-    otherwise({
-        redirectTo: '/'
-    });
+        when('/', {
+            controller: 'DashboardCtrl',
+            templateUrl: 'views/dashboard.html'
+        }).
+        when('/notification', {
+            controller: 'NotifyCtrl',
+            templateUrl: 'views/notification.html'
+        }).
+        when('/transfer', {
+            controller: 'TransferCtrl',
+            templateUrl: 'views/transfer.html'
+        }).
+        when('/monitor', {
+            controller: 'MonitorCtrl',
+            templateUrl: 'views/monitor.html'
+        }).
+
+        otherwise({
+            redirectTo: '/'
+        });
 }
 
 function httpConfig($httpProvider) {
@@ -152,4 +157,16 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     //todo(xichen) pending to active button, pagination
 
     $scope.loadTransfer();
+}]);
+
+app.controller('MonitorCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.reload = function () {
+      $http.get('/monitor/actors/get', {})
+          .success(function(data, status, headers, config) {
+              console.log("actors", data.data.pathList);
+            $scope.pathList = data.data.pathList;
+        });
+    };
+
+    $scope.reload();
 }]);
