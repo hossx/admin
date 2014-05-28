@@ -56,8 +56,8 @@
             <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
             <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
             <td> {{item.operation | tType}} </td>
-            <td> <button ng-click="confirm(item)" >Confirm</button> </td>
-            <td> <button ng-click="reject(item)" >Reject</button> </td>
+            <td> <button ng-click="transferConfirm(item)" >Confirm</button> </td>
+            <td> <button ng-click="transferReject(item)" >Reject</button> </td>
         </tr>
         </tbody>
         <pagination boundary-links="true" total-items="snapshots.count" ng-model="snapshotsPage" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>

@@ -139,16 +139,16 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
             });
     };
 
-    $scope.confirm = function () {
-        $http.post('/transfer/confirm', $.param($scope.item.id))
+    $scope.transferConfirm = function (item) {
+        $http.post('/transfer/confirm/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
                 $scope.loadTransfer();
             });
     };
 
-    $scope.reject = function () {
-        $http.post('/transfer/reject', $.param($scope.item.id))
+    $scope.transferReject = function (item) {
+        $http.post('/transfer/reject/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
                 $scope.loadTransfer();
