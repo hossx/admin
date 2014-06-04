@@ -44,12 +44,12 @@ object Admin extends Controller with Json4s {
 
   def index = Authenticated {
     implicit request =>
-    Ok(views.html.index()(session))
+    Ok(views.html.index()(request.session))
   }
 
   def deposit = Authenticated {
     implicit request =>
-    Ok(views.html.index()(session))
+    Ok(views.html.index()(request.session))
   }
 
   def getTransfers() = Action.async {

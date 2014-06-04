@@ -1,8 +1,15 @@
+import sbt.Keys._
+
 name := """coinport-admin"""
 
 version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.4"
+
+lazy val root = (project in file("."))
+    .enablePlugins(PlayScala)
+    .enablePlugins(SbtTwirl)
+
 
 resolvers ++= Seq(
   "Nexus Snapshots" at "http://192.168.0.105:8081/nexus/content/groups/public/",
@@ -21,7 +28,7 @@ libraryDependencies ++= {
     "org.json4s" %% "json4s-ext" % "3.2.8",
     "com.github.tototoshi" %% "play-json4s-native" % "0.2.0",
     "com.github.tototoshi" %% "play-json4s-test-native" % "0.2.0" % "test",
-    "com.coinport" %% "coinex-client" % "1.1.16-SNAPSHOT"
+    "com.coinport" %% "coinex-client" % "1.1.18-SNAPSHOT"
   )
 }
 
