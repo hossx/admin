@@ -2,6 +2,8 @@ name := """coinport-admin"""
 
 version := "1.0.0-SNAPSHOT"
 
+scalaVersion := "2.10.4"
+
 resolvers ++= Seq(
   "Nexus Snapshots" at "http://192.168.0.105:8081/nexus/content/groups/public/",
   Resolver.sonatypeRepo("snapshots")
@@ -23,5 +25,4 @@ libraryDependencies ++= {
   )
 }
 
-play.Project.playScalaSettings
 
