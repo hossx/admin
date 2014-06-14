@@ -15,5 +15,7 @@ GET     /transfer/get                 controllers.Admin.getTransfers()
 POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
 
+GET     /user/search                  controllers.Users.search()
+
 # Default path to /public
 GET     /*file                        controllers.Assets.at(path="/public", file)

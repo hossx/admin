@@ -1,0 +1,59 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | 用户管理 </li>
+    </ul>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form class="form-horizontal" role="form">
+            <div class="form-group">
+                <label class="col-md-2" for="username" align="right">User Name</label>
+                <input class="col-md-4" id="username" ng-bind="search.username"/>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2" for="idFrom" align="right">User ID</label>
+                <input class="col-md-4" id="idFrom" ng-bind="search.idFrom" placeholder="From"/>
+                <span class="col-md-1" align="center"> - </span>
+                <input class="col-md-4" id="idTo" bg-bind="search.idTo" placeholder="To"/>
+            </div>
+            <div class="form-group">
+                <button class="col-md-offset-2 col-md-1" type="submit" ng-click="listUser()"> 搜索 </button>
+            </div>
+        </form>
+
+        <div style="height: 20px"> </div>
+        <div ng-show="showError">
+            <p ng-bind="errorMessage"></p>
+        </div>
+    </div>
+
+</div>
+
+<div>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Email verified</th>
+                <th>Mobile verified</th>
+                <th>Status</th>
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in searchResult">
+                <td>{{user.id}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.emailVerified}}</td>
+                <td>{{user.mobileVerified}}</td>
+                <td>{{user.status}}</td>
+                <td>
+                    <a href="">suspend</a> &nbsp;&nbsp;&nbsp;
+                    <a href="">resume</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

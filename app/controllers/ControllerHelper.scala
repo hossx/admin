@@ -71,4 +71,10 @@ object ControllerHelper {
     Pager(skip = skip, limit = limit, page = page)
   }
 
+  def strToLong(str: String): Option[Long] =
+    try {
+      Some(str.toLong)
+    } catch {
+      case _: Throwable => None
+    }
 }

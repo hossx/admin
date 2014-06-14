@@ -1,0 +1,65 @@
+package services
+
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
+import com.mongodb.casbah.MongoURI
+import com.mongodb.casbah.Imports._
+
+import com.coinport.coinex.data._
+import com.coinport.coinex.api.model._
+import com.coinport.coinex.common.mongo.SimpleJsonMongoCollection
+import com.coinport.coinex.util.MHash
+import models.UserInfo
+
+object UserService {
+  val config = ConfigFactory.load("akka.conf")
+  val userProfiles = initUserProfiles
+  val limitMax: Int = 30
+
+  val EMAIL_FLD = userProfiles.DATA + ".email"
+
+  private def initUserProfiles = {
+    val secret = config.getString("akka.exchange.secret")
+    val userManagerSecret = MHash.sha256Base64(secret + "userProcessorSecret")
+    val mongoUriForViews = MongoURI(config.getString("akka.exchange.mongo-uri-for-readers"))
+    val mongoForViews = MongoConnection(mongoUriForViews)
+    val dbForViews = mongoForViews(mongoUriForViews.database.get)
+
+    new SimpleJsonMongoCollection[UserProfile, UserProfile.Immutable] {
+      import org.json4s.native.Serialization.read
+
+      val coll = dbForViews("user_profiles")
+      def extractId(profile: UserProfile) = profile.id
+
+      def findAsending(q: MongoDBObject, skip: Int, limit: Int): Seq[UserProfile] = {
+        coll.find(q).sort(MongoDBObject(ID -> 1)).skip(skip).limit(limit).map { json => read[UserProfile.Immutable](json.get(DATA).toString) }.toSeq
+      }
+    }
+  }
+
+  def searchUser(userName: String, uidFrom: Long, uidTo: Long): ApiResult = {
+    val q:DBObject = if (userName != null && userName.trim.length > 0) {
+      (userProfiles.ID $gte uidFrom $lt uidTo) ++ MongoDBObject(EMAIL_FLD -> ("/" + userName + "/"))
+    } else {
+      (userProfiles.ID $gte uidFrom $lt uidTo)
+    }
+
+    val result = userProfiles.findAsending(q, 0, limitMax).map(profile2UserInfo)
+    //println(s"searchUser result: $result")
+    result.foreach(println)
+    if (result != null && result.size > 0)
+      ApiResult(true, 0, "", Some(result))
+    else
+      ApiResult(false, -1, "search result empty")
+  }
+
+  private def profile2UserInfo(profile: UserProfile): UserInfo = {
+    UserInfo(profile.id, profile.email, profile.emailVerified,
+      profile.mobileVerified, profile.status.toString)
+  }
+
+  private def profile2User(profile: UserProfile): User = {
+    User(id = profile.id, email = profile.email, password = null,
+      status = profile.status)
+  }
+}

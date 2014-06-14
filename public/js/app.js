@@ -49,6 +49,10 @@ function routeConfig($routeProvider) {
             controller: 'MonitorCtrl',
             templateUrl: 'views/monitor.html'
         }).
+        when('/users', {
+            controller: 'UserCtrl',
+            templateUrl: 'views/users.html'
+        }).
 
         otherwise({
             redirectTo: '/'
@@ -169,4 +173,22 @@ app.controller('MonitorCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.reload();
+}]);
+
+app.controller('UserCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.search = {};
+    $scope.searchResult = [];
+    $scope.showError = false;
+    $scope.listUser = function () {
+        $http.get('/user/search', { params: $scope.search })
+            .success(function(data, status, headers, config) {
+                console.log("result: ", data);
+                if (data.success) {
+                    $scope.searchResult = data.data;
+                } else {
+                    $scope.showError = true;
+                    $scope.errorMessage = data.message;
+                }
+            })
+    };
 }]);
