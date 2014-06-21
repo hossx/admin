@@ -110,7 +110,8 @@ object Admin extends Controller with Json4s {
         content = ControllerHelper.getParam(data, "content", ""),
         removed = ControllerHelper.getParam(data, "removed", "false").toBoolean,
         created = ControllerHelper.getParam(data, "created", System.currentTimeMillis().toString).toLong,
-        updated = System.currentTimeMillis())
+        updated = System.currentTimeMillis(),
+        lang = Language(ControllerHelper.getParam(data, "language", "0").toInt))
 
       NotificationService.updateNotification(n)
       Ok(ApiResult.toJson)

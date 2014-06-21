@@ -16,6 +16,7 @@ app.filter('tStatus', function() {
         }
     }
 });
+
 app.filter('tType', function() {
     return function(input) {
         switch (input) {
@@ -26,6 +27,16 @@ app.filter('tType', function() {
             case 4: return 'COLD_TO_HOT';
             case 5: return 'UNKNOWN';
             default: return 'UNKNOWN';
+        }
+    }
+});
+
+app.filter('lang', function() {
+    return function(input) {
+        switch (input) {
+            case 0: return 'CHINESE';
+            case 1: return 'ENGLISH';
+            default: return 'CHINESE';
         }
     }
 });

@@ -14,6 +14,7 @@
             <th>Removed</th>
             <th>Created</th>
             <th>Updated</th>
+            <th>Language</th>
         </tr>
         </thead>
         <tbody>
@@ -25,6 +26,7 @@
             <td> {{item.removed}} </td>
             <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
             <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
+            <th> {{item.lang}}</th>
             <td> <button class="btn btn-danger" ng-click="remove(item)" >Remove</button> </td>
         </tr>
         </tbody>

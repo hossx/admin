@@ -13,13 +13,12 @@ lazy val root = (project in file("."))
 
 resolvers ++= Seq(
   "Nexus Snapshots" at "http://192.168.0.105:8081/nexus/content/groups/public/",
-  "Local Ivy2 Repository" at "file://~/.ivy2/local",
   Resolver.sonatypeRepo("snapshots")
 )
 
 libraryDependencies ++= {
   val akkaVersion = "2.3.3"
-  val coinexVersion = "1.1.20-SNAPSHOT"
+  val coinexVersion = "1.1.21-SNAPSHOT"
   Seq(
     "com.typesafe.akka"           %% "akka-remote"                      % akkaVersion,
     "com.typesafe.akka"           %% "akka-cluster"                     % akkaVersion,
@@ -34,3 +33,5 @@ libraryDependencies ++= {
     "com.coinport" %% "coinex-backend" % coinexVersion
   )
 }
+
+
