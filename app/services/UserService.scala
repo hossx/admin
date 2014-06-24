@@ -1,5 +1,8 @@
 package services
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import akka.pattern.ask
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.mongodb.casbah.MongoURI
@@ -9,9 +12,10 @@ import com.coinport.coinex.data._
 import com.coinport.coinex.api.model._
 import com.coinport.coinex.common.mongo.SimpleJsonMongoCollection
 import com.coinport.coinex.util.MHash
+import com.coinport.coinex.api.service.AkkaService
 import models.UserInfo
 
-object UserService {
+object UserService extends AkkaService {
   val config = ConfigFactory.load("akka.conf")
   val userProfiles = initUserProfiles
   val limitMax: Int = 30
@@ -39,13 +43,13 @@ object UserService {
 
   def searchUser(userName: String, uidFrom: Long, uidTo: Long): ApiResult = {
     val q:DBObject = if (userName != null && userName.trim.length > 0) {
-      (userProfiles.ID $gte uidFrom $lt uidTo) ++ MongoDBObject(EMAIL_FLD -> ("/" + userName + "/"))
+      (userProfiles.ID $gte uidFrom $lte uidTo) ++ MongoDBObject(EMAIL_FLD -> (".*" + userName + ".*").r)
     } else {
-      (userProfiles.ID $gte uidFrom $lt uidTo)
+      (userProfiles.ID $gte uidFrom $lte uidTo)
     }
-
+    println(s"query cond: $q")
     val result = userProfiles.findAsending(q, 0, limitMax).map(profile2UserInfo)
-    //println(s"searchUser result: $result")
+    println(s"searchUser result: $result")
     result.foreach(println)
     if (result != null && result.size > 0)
       ApiResult(true, 0, "", Some(result))
@@ -61,5 +65,35 @@ object UserService {
   private def profile2User(profile: UserProfile): User = {
     User(id = profile.id, email = profile.email, password = null,
       status = profile.status)
+  }
+
+  def suspendUser(uid: Long): Future[ApiResult] = {
+    val command = DoSuspendUser(uid)
+    backend ? command map {
+      case result: SuspendUserResult =>
+        result.userProfile match {
+          case Some(profile) =>
+            ApiResult(true, 0, "", Some(profile2UserInfo(profile)))
+          case None =>
+            ApiResult(false, ErrorCode.UserNotExist.value, "用户不存在", None)
+        }
+      case e =>
+        ApiResult(false, -1, e.toString)
+    }
+  }
+
+  def resumeUser(uid: Long): Future[ApiResult] = {
+    val command = DoResumeUser(uid)
+    backend ? command map {
+      case result: ResumeUserResult =>
+        result.userProfile match {
+          case Some(profile) =>
+            ApiResult(true, 0, "", Some(profile2UserInfo(profile)))
+          case None =>
+            ApiResult(false, ErrorCode.UserNotExist.value, "用户不存在", None)
+        }
+      case e =>
+        ApiResult(false, -1, e.toString)
+    }
   }
 }

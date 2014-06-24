@@ -4,18 +4,18 @@
     </ul>
 </div>
 
-<div class="row">
+<div class="row" id="searchDiv" ng-show="showSearchDiv">
     <div class="col-md-8">
         <form class="form-horizontal" role="form">
             <div class="form-group">
                 <label class="col-md-2" for="username" align="right">User Name</label>
-                <input class="col-md-4" id="username" ng-bind="search.username"/>
+                <input class="col-md-4" id="username" ng-model="search.username"/>
             </div>
             <div class="form-group">
                 <label class="col-md-2" for="idFrom" align="right">User ID</label>
-                <input class="col-md-4" id="idFrom" ng-bind="search.idFrom" placeholder="From"/>
+                <input class="col-md-4" id="idFrom" ng-model="search.idFrom" placeholder="From"/>
                 <span class="col-md-1" align="center"> - </span>
-                <input class="col-md-4" id="idTo" bg-bind="search.idTo" placeholder="To"/>
+                <input class="col-md-4" id="idTo" ng-model="search.idTo" placeholder="To"/>
             </div>
             <div class="form-group">
                 <button class="col-md-offset-2 col-md-1" type="submit" ng-click="listUser()"> 搜索 </button>
@@ -30,7 +30,7 @@
 
 </div>
 
-<div>
+<div id="searchResultDiv" ng-show="showSearchResDiv">
     <table class="table table-condensed">
         <thead>
             <tr>
@@ -50,10 +50,60 @@
                 <td>{{user.mobileVerified}}</td>
                 <td>{{user.status}}</td>
                 <td>
-                    <a href="">suspend</a> &nbsp;&nbsp;&nbsp;
-                    <a href="">resume</a>
+                    <button ng-click='getUserProfile(user.id)'>detail</button>
                 </td>
             </tr>
         </tbody>
     </table>
+</div>
+
+<div id="userProfileDiv" ng-show="showProfileDiv">
+    <div>
+        <h4>Profile of {{userProfile.email}}</h4>
+    </div>
+
+    <div style="height: 20px;"></div>
+
+    <div>
+        <table class="userProfileTable">
+            <tr>
+                <th>ID</th>
+                <td>{{userProfile.id}}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{userProfile.email}}</td>
+            </tr>
+            <tr>
+                <th>Emial verified</th>
+                <td>{{userProfile.emailVerified}}</td>
+            </tr>
+            <tr>
+                <th>Mobile</th>
+                <td>{{userProfile.mobile}}</td>
+            </tr>
+            <tr>
+                <th>Mobile verified</th>
+                <td>{{userProfile.mobileVerified}}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{userProfile.status}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="height: 30px"></div>
+    <div class="col-sm-offset-1">
+        <button ng-click="suspendUser(userProfile.id)" ng-hide="userProfile.status != 'Normal'">suspend</button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button ng-click="resumeUser(userProfile.id)" ng-hide="userProfile.status == 'Normal'">resume</button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <button ng-click="backToSearch()">back</button>
+    </div>
+
+    <div class="error-container" ng-show="showUserProfileError">
+        <p>{{userProfileError}}</p>
+    </div>
+
+    <div style="height: 100px"></div>
+
 </div>

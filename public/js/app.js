@@ -190,16 +190,85 @@ app.controller('UserCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.search = {};
     $scope.searchResult = [];
     $scope.showError = false;
+
+    $scope.showSearchDiv = true;
+    $scope.showSearchResDiv = true;
+    $scope.showProfileDiv = false;
     $scope.listUser = function () {
+        console.log("search: ", $scope.search);
         $http.get('/user/search', { params: $scope.search })
             .success(function(data, status, headers, config) {
                 console.log("result: ", data);
                 if (data.success) {
+                    $scope.showError = false;
                     $scope.searchResult = data.data;
                 } else {
                     $scope.showError = true;
                     $scope.errorMessage = data.message;
+                    $scope.searchResult = [];
                 }
-            })
+            });
     };
+
+    $scope.userProfile = {};
+    $scope.showUserProfileError = false;
+    $scope.getUserProfile = function(uid) {
+        for (var i = 0; i < $scope.searchResult.length; i ++) {
+            if ($scope.searchResult[i].id == uid) {
+                $scope.userProfile = $scope.searchResult[i];
+                break;
+            }
+        }
+
+        $scope.showSearchDiv = false;
+        $scope.showSearchResDiv = false;
+        $scope.showProfileDiv = true;
+    };
+
+    $scope.backToSearch = function () {
+        $scope.updateUsers();
+        $scope.showSearchDiv = true;
+        $scope.showSearchResDiv = true;
+        $scope.showProfileDiv = false;
+    };
+
+    $scope.updateUsers = function(user) {
+        for (var i = 0; i < $scope.searchResult.length; i++) {
+            if ($scope.searchResult[i].id == $scope.userProfile.id) {
+                $scope.searchResult[i].status = $scope.userProfile.status;
+                break;
+            }
+        }
+    };
+
+    $scope.suspendUser = function (uid) {
+        console.debug("suspend user: ", uid);
+        $http.get('/user/suspend/' + uid)
+            .success(function(data, status, headers, config) {
+                console.log("result: ", data);
+                if (data.success) {
+                    $scope.showUserProfileError = false;
+                    $scope.userProfile = data.data;
+                } else {
+                    $scope.showUserProfileError = true;
+                    $scope.userProfileError = data.message;
+                }
+            });
+    };
+
+    $scope.resumeUser = function (uid) {
+        console.debug("resume user: ", uid);
+        $http.get('/user/resume/' + uid)
+            .success(function(data, status, headers, config) {
+                console.log("result: ", data);
+                if (data.success) {
+                    $scope.showUserProfileError = false;
+                    $scope.userProfile = data.data;
+                } else {
+                    $scope.showUserProfileError = true;
+                    $scope.userProfileError = data.message;
+                }
+            });
+    };
+
 }]);

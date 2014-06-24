@@ -29,4 +29,21 @@ object Users extends Controller with Json4s {
     val result = AdminUserService.searchUser(userName, idFrom, idTo)
     Ok(result.toJson)
   }
+
+  def suspend(uid: Long) = Authenticated.async {
+    implicit request =>
+    AdminUserService.suspendUser(uid) map {
+      result =>
+      Ok(result.toJson)
+    }
+  }
+
+  def resume(uid: Long) = Authenticated.async {
+    implicit request =>
+    AdminUserService.resumeUser(uid) map {
+      result =>
+      Ok(result.toJson)
+    }
+  }
+
 }
