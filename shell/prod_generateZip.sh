@@ -1,4 +1,5 @@
 cd /var/coinport/code/admin/
+git fetch
 releaseBranch=`git branch | grep $1`
 if [ -z "$releaseBranch" ];then
   git checkout -b $1 origin/$1
