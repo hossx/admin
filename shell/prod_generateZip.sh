@@ -1,7 +1,7 @@
 cd /var/coinport/code/admin/
-releaseBranch=`git branch -a | grep $1`
+releaseBranch=`git branch | grep $1`
 if [ -z "$releaseBranch" ];then
-  git checkout -b $1 remotes/origin/$1
+  git checkout -b $1 origin/$1
 else
   git checkout $1
 fi
