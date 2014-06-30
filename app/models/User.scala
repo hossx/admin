@@ -8,7 +8,7 @@ import com.typesafe.config.Config
 case class User(email: String, name: String, password: String)
 
 object User {
-  val userConfigFile = "users.conf"
+  val userConfigFile = "/var/coinport/private/users.conf"
 
   private def loadUserFromConfig(): Seq[User] = {
     val config = ConfigFactory.load(userConfigFile)
@@ -24,7 +24,6 @@ object User {
    */
   def authenticate(email: String, password: String): Option[User] = {
     val preDefinedUsers = loadUserFromConfig
-    preDefinedUsers.foreach(println)
     preDefinedUsers.find(_.email.equals(email)) match {
       case Some(user) => if(user.password.equals(password)) Some(user) else None
       case None => None
