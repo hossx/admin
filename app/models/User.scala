@@ -2,6 +2,7 @@ package models
 
 import play.api.Play.current
 import scala.collection.JavaConversions._
+import java.io.File
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
 
@@ -11,7 +12,7 @@ object User {
   val userConfigFile = "/var/coinport/private/users.conf"
 
   private def loadUserFromConfig(): Seq[User] = {
-    val config = ConfigFactory.load(userConfigFile)
+    val config = ConfigFactory.parseFile(new File(userConfigFile))
     val users = config.getConfigList("users") map {
       u: Config =>
       User(u.getString("email"), u.getString("name"), u.getString("password"))
