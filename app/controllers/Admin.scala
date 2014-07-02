@@ -111,7 +111,7 @@ object Admin extends Controller with Json4s {
         removed = ControllerHelper.getParam(data, "removed", "false").toBoolean,
         created = ControllerHelper.getParam(data, "created", System.currentTimeMillis().toString).toLong,
         updated = System.currentTimeMillis(),
-        lang = Language(ControllerHelper.getParam(data, "language", "0").toInt))
+        lang = Language.valueOf(ControllerHelper.getParam(data, "language", "Chinese")).getOrElse(Language.Chinese))
 
       NotificationService.updateNotification(n)
       Ok(ApiResult.toJson)

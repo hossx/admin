@@ -37,6 +37,7 @@
     <input type="string" name="title" class="form-control" placeholder='title' ng-model="notification.title"  required>
     <input type="string" name="content" class="form-control" placeholder='content' ng-model="notification.content"  required>
      <select ng-options="t.value as t.text for t in ntypes" ng-model="notification.ntype"></select>
+     <select ng-options="l.value as l.text for l in languages" ng-model="notification.language"></select>
     </tr>
 </div>
 <div>

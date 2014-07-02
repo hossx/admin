@@ -34,9 +34,9 @@ app.filter('tType', function() {
 app.filter('lang', function() {
     return function(input) {
         switch (input) {
-            case 0: return 'CHINESE';
-            case 1: return 'ENGLISH';
-            default: return 'CHINESE';
+            case 0: return 'Chinese';
+            case 1: return 'English';
+            default: return 'Chinese';
         }
     }
 });
@@ -87,6 +87,11 @@ app.controller('NotifyCtrl', ['$scope', '$http', function($scope, $http) {
     {text: 'Danger', value: 'Danger'},
     {text: 'Success', value: 'Success'},
     {text: 'Info', value: 'Info'}];
+
+    $scope.languages = [
+        {text: 'Chinese', value: 'Chinese'},
+        {text: 'English', value: 'English'}];
+
 
     $scope.notification = {};
     $scope.notification.ntype = "Info";
