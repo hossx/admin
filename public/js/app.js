@@ -12,6 +12,8 @@ app.filter('tStatus', function() {
             case 5: return 'FAILED';
             case 6: return 'REORGING';
             case 7: return 'REORGING_SUCCEEDED';
+            case 8: return 'CANCELLED';
+            case 9: return 'REJECTED';
             default: return 'UNKNOWN';
         }
     }
