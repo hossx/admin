@@ -18,7 +18,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= {
   val akkaVersion = "2.3.3"
-  val coinexVersion = "1.1.30-SNAPSHOT"
+  val coinexVersion = "1.1.32-SNAPSHOT"
   Seq(
     "com.typesafe.akka"           %% "akka-remote"                      % akkaVersion,
     "com.typesafe.akka"           %% "akka-cluster"                     % akkaVersion,
