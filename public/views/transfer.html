@@ -1,65 +1,124 @@
 <div id="breadcrumbs">
     <ul class="breadcrumb">
-        <li class="active"><i class="fa fa-home"></i> Admin | 充值管理</li>
+        <li class="active"><i class="fa fa-home"></i> Admin | 充值提现</li>
     </ul>
 </div>
-<div>
-        <table class="table">
-            <tbody><tr>
-            <td>
-                <label>Transfer Type</label>
-                <select ng-options="t.value as t.text for t in transferTypes" ng-model="query.tType" class="form-control"></select>
-            </td>
-            <td>
-                <label>Transfer Status</label>
-                <select ng-options="t.value as t.text for t in transferStatus" ng-model="query.status" class="form-control"></select>
-            </td>
-            <td>
-                <label>Currency</label>
-                <select ng-options="t.value as t.text for t in currencyList" ng-model="query.currency" class="form-control"></select>
-            </td>
-            <td>
-                <label>ID</label>
-                <input name='ID' ng-model="query.id" class="form-control" >
-            </td>
-            <td>
-                <label>UID</label>
-                <input name='User Id' ng-model="query.uid" class="form-control" >
-            </td>
-            <td>
-                <button class="buttons" ng-click="loadTransfer()"  class="form-control">Search</button>
-            </td>
+<div class="row">
+    <table class="table">
+        <tbody>
+        <tr>
+        <td>
+            <label>Transfer Type</label>
+            <select ng-options="t.value as t.text for t in transferTypes" ng-model="query.tType" class="form-control"></select>
+        </td>
+        <td>
+            <label>Transfer Status</label>
+            <select ng-options="t.value as t.text for t in transferStatus" ng-model="query.status" class="form-control"></select>
+        </td>
+        <td>
+            <label>Currency</label>
+            <select ng-options="t.value as t.text for t in currencyList" ng-change="reload()" ng-model="currency" class="form-control"></select>
+        </td>
+        <td>
+            <label>ID</label>
+            <input name='ID' ng-model="query.id" class="form-control" >
+        </td>
+        <td>
+            <label>UID</label>
+            <input name='User Id' ng-model="query.uid" class="form-control" >
+        </td>
+        <td>
+            <button class="buttons" ng-click="reload()"  class="form-control">Search</button>
+        </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="col-md-8">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>User Id</th>
+                <th>Type</th>
+                <th>Currency</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Operation</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in transfers | orderBy: ['-id']" class="{{item.operation|transferOperationClass}}">
+                <td> {{item.id}} </td>
+                <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
+                <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
+                <td> <a target="_blank" href="https://coinport.com/user/{{item.uid}}">{{item.uid}}</a></td>
+                <td> <span class="badge badge-{{item.operation|transferOperationClass}}">{{item.operation | tType}}</span> </td>
+                <td> {{item.amount.currency}} </td>
+                <td> <b>{{item.status | transferSign}} {{item.amount.value | quantity}}</b> </td>
+                <td> <span class="label label-{{item.status|transferStatusClass}}">{{item.status | tStatus}}</span> </td>
+                <td>
+                    <button class="btn btn-success" ng-show="item.status == 0" ng-click="transferConfirm(item)">Confirm</button>
+                    &nbsp;&nbsp;
+                    <button class="btn btn-danger" ng-show="item.status == 0" ng-click="transferReject(item)">Reject</button>
+                </td>
+            </tr>
+            </tbody>
+            <pagination boundary-links="true" total-items="snapshots.count" ng-model="snapshotsPage" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-striped table-condensed">
+            <thead>
+            <tr>
+                <th nowrap class="">Hot Wallets &nbsp;&nbsp;&nbsp; Address</th>
+                <th nowrap class="text-right">Amount</th>
+                <th nowrap class="text-right">Accumulated</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="wallet in hotWallets" class="warning">
+                <td class="">
+                    <a href="{{addressUrl}}{{wallet.address}}" target="_blank" class="" data-toggle="tooltip" data-placement="top" title="{{wallet.address}}">
+                        <span ng-bind="wallet.address"></span> <i class="fa fa-external-link"></i>
+                    </a>
+                </td>
+                <td class="text-right">
+                    <span ng-bind="wallet.amount.value"></span>
+                </td>
+                <td class="text-right">
+                    <b class="badge badge-info" ng-bind="wallet.accumulated.value" ng-show="$first"></b>
+                    <span ng-bind="wallet.accumulated.value" ng-hide="$first"></span>
+                </td>
             </tr>
             </tbody>
         </table>
-<div>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>User Id</th>
-            <th>Currency</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Created</th>
-            <th>Updated</th>
-            <th>Operation</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="item in transfers | orderBy: ['-id']" class="">
-            <td> {{item.id}} </td>
-            <td> {{item.uid}} </td>
-            <td> {{item.amount.currency}} </td>
-            <td> {{item.amount.display}} </td>
-            <td> {{item.status | tStatus}} </td>
-            <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
-            <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
-            <td> {{item.operation | tType}} </td>
-            <td> <button ng-click="transferConfirm(item)" >Confirm</button> </td>
-            <td> <button ng-click="transferReject(item)" >Reject</button> </td>
-        </tr>
-        </tbody>
-        <pagination boundary-links="true" total-items="snapshots.count" ng-model="snapshotsPage" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
-    </table>
+
+
+        <table class="table table-striped table-condensed">
+            <thead>
+            <tr>
+                <th nowrap class="">Cold Wallets &nbsp;&nbsp;&nbsp; Address</th>
+                <th nowrap class="text-right">Amount</th>
+                <th nowrap class="text-right">Accumulated</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="wallet in coldWallets" class="success">
+                <td class="">
+                    <a href="{{addressUrl}}{{wallet.address}}" target="_blank" class="" data-toggle="tooltip" data-placement="top" title="{{wallet.address}}">
+                        <span ng-bind="wallet.address"></span> <i class="fa fa-external-link"></i>
+                    </a>
+                </td>
+                <td class="text-right">
+                    <span ng-bind="wallet.amount.value"></span>
+                </td>
+                <td class="text-right">
+                    <span ng-bind="wallet.accumulated.value"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

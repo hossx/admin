@@ -14,6 +14,7 @@ app.filter('tStatus', function() {
             case 7: return 'REORGING_SUCCEEDED';
             case 8: return 'CANCELLED';
             case 9: return 'REJECTED';
+            case -1: return 'Operating...';
             default: return 'UNKNOWN';
         }
     }
@@ -43,6 +44,52 @@ app.filter('lang', function() {
     }
 });
 
+app.filter('transferStatusClass', function() {
+    return function(input) {
+        if (input == 4) return 'success';
+        if (input == 5) return 'danger';
+        return 'warning';
+    };
+});
+
+app.filter('transferOperationText', function() {
+    return function(input) {
+        return Messages.transfer.operation[input];
+    };
+});
+
+app.filter('transferSign', function() {
+    return function(input) {
+        return input == 0 ? '+' : '-';
+    };
+});
+
+app.filter('transferOperationClass', function() {
+    return function(input) {
+        if (input == 0) return 'success';
+        if (input == 1) return 'warning';
+        return '';
+    };
+});
+
+app.filter('quantity', function() {
+    var filter = function(input) {
+        if (!input) return 0;
+        if (input > 1e-6) return +input.toFixed(8);
+        var s = input.toFixed(8);
+        return s;
+    }
+    return filter;
+});
+
+app.filter('price', function() {
+    return function(input) {
+        if (!input) return 0;
+        if (input > 1e-6) return +input.toFixed(8);
+        var s = input.toFixed(8);
+        return s;
+    };
+});
 
 function routeConfig($routeProvider) {
     $routeProvider.
@@ -144,16 +191,25 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'}];
 
     $scope.currencyList = [
-        {text: 'CNY', value: 'CNY'},
+        {text: 'ALL', value: 'ALL'},
         {text: 'BTC', value: 'BTC'},
         {text: 'LTC', value: 'LTC'},
-        {text: 'PTS', value: 'PTS'},
-        {text: 'DOGE', value: 'DOGE'}];
+        {text: 'DOGE', value: 'DOGE'},
+        {text: 'BC', value: 'BC'},
+        {text: 'DRK', value: 'DRK'},
+        {text: 'VRC', value: 'VRC'},
+        {text: 'ZET', value: 'ZET'}
+
+        ];
+
+    $scope.hotWallets = [];
+    $scope.coldWallets = [];
 
     $scope.query = {};
-    $scope.loadTransfer = function () {
+    $scope.loadTransfer = function() {
         $scope.query.skip = 0;
-        $scope.query.limit = 15;
+        $scope.query.limit = 25;
+        $scope.query.currency = $scope.currency;
         $http.get('/transfer/get', {params: $scope.query})
             .success(function (data, status, headers, config) {
                 $scope.transfers = data.data.items;
@@ -161,24 +217,46 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
             });
     };
 
-    $scope.transferConfirm = function (item) {
+    $scope.transferConfirm = function(item) {
+        item.status = -1;
         $http.post('/transfer/confirm/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
-                $scope.loadTransfer();
+                setTimeout($scope.loadTransfer, 1000);
             });
     };
 
-    $scope.transferReject = function (item) {
+    $scope.transferReject = function(item) {
+        item.status = -1;
         $http.post('/transfer/reject/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
-                $scope.loadTransfer();
+                setTimeout($scope.loadTransfer, 1000);
             });
     };
-    //todo(xichen) pending to active button, pagination
+
+    $scope.loadWallets = function() {
+        $scope.addressUrl = COINPORT.addressUrl[$scope.currency];
+        $http.get('/api/open/wallet/' + $scope.currency + '/hot')
+            .success(function(data, status, headers, config) {
+                $scope.hotWallets = data.data.reverse();
+                console.log($scope.hotWallets);
+            });
+
+        $http.get('/api/open/wallet/' + $scope.currency + '/cold')
+            .success(function(data, status, headers, config) {
+                $scope.coldWallets = data.data.reverse();
+                console.log($scope.coldWallets);
+            });
+    };
+
+    $scope.reload = function() {
+        $scope.loadTransfer();
+        $scope.loadWallets();
+    };
 
     $scope.loadTransfer();
+
 }]);
 
 app.controller('MonitorCtrl', ['$scope', '$http', function($scope, $http) {
@@ -279,3 +357,30 @@ app.controller('UserCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
 }]);
+
+// Directives
+// nav bar
+app.directive('cpNav', function($window) {
+ 'use strict';
+ return {
+   restrict: 'A',
+   link: function postLink(scope, element, attrs, controller) {
+     // Watch for the $window
+     scope.$watch(function() {
+       return $window.location.hash;
+     }, function(newValue, oldValue) {
+
+       $('[route]', element).each(function(k, elem) {
+         var $elem = angular.element(elem),
+           pattern = $elem.attr('route'),
+           regexp = new RegExp('^' + pattern + '$', ['i']);
+         if(regexp.test(newValue)) {
+           $elem.addClass('active');
+         } else {
+           $elem.removeClass('active');
+         }
+       });
+     });
+   }
+ };
+})

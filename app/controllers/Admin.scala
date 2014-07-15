@@ -1,5 +1,6 @@
 package controllers
 
+import _root_.play.api.mvc.Action
 import play.api._
 import play.api.mvc._
 import play.api.data._
@@ -11,6 +12,8 @@ import com.coinport.coinex.api.service._
 import com.coinport.coinex.api.model._
 import com.github.tototoshi.play2.json4s.native.Json4s
 import models.{User => AdminUser}
+import com.coinport.coinex.api.service.BitwayService
+import com.coinport.coinex.data.CryptoCurrencyAddressType
 
 object Admin extends Controller with Json4s {
   val loginForm = Form(
@@ -115,6 +118,12 @@ object Admin extends Controller with Json4s {
 
       NotificationService.updateNotification(n)
       Ok(ApiResult.toJson)
+  }
+
+  def wallets(currency: String, walletsType: String) = Action.async {
+    implicit request =>
+      BitwayService.getWallets(currency, CryptoCurrencyAddressType.valueOf(walletsType).get).map(result =>
+        Ok(result.toJson))
   }
 
   private def getParam(queryString: Map[String, Seq[String]], param: String): Option[String] = {

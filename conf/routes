@@ -19,5 +19,7 @@ GET     /user/search                  controllers.Users.search()
 GET     /user/suspend/*id             controllers.Users.suspend(id: Long)
 GET     /user/resume/*id              controllers.Users.resume(id: Long)
 
+GET     /api/open/wallet/*currency/*wtype   controllers.Admin.wallets(currency, wtype)
+
 # Default path to /public
 GET     /*file                        controllers.Assets.at(path="/public", file)
