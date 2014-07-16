@@ -56,7 +56,7 @@
                 <td> <a target="_blank" href="https://coinport.com/user/{{item.uid}}">{{item.uid}}</a></td>
                 <td> <span class="badge badge-{{item.operation|transferOperationClass}}">{{item.operation | tType}}</span> </td>
                 <td> {{item.amount.currency}} </td>
-                <td> <b>{{item.status | transferSign}} {{item.amount.value | quantity}}</b> </td>
+                <td> <b>{{item.operation | transferSign}} {{item.amount.value | quantity}}</b> </td>
                 <td> <span class="label label-{{item.status|transferStatusClass}}">{{item.status | tStatus}}</span> </td>
                 <td>
                     <button class="btn btn-success" ng-show="item.status == 0" ng-click="transferConfirm(item)">Confirm</button>
