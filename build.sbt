@@ -29,7 +29,6 @@ libraryDependencies ++= {
     "org.json4s" %% "json4s-ext" % "3.2.8",
     "com.github.tototoshi" %% "play-json4s-native" % "0.2.0",
     "com.github.tototoshi" %% "play-json4s-test-native" % "0.2.0" % "test",
-    "com.coinport" %% "coinex-client" % coinexVersion,
-    "com.coinport" %% "coinex-backend" % coinexVersion
+    "com.coinport" %% "coinex-client" % coinexVersion
   )
 }
