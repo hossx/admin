@@ -81,14 +81,12 @@ object UserService extends AkkaService {
       ApiResult(false, -1, "search result empty")
   }
 
+  def totalCount = ApiResult(true, 0 , "", Some(userProfiles.coll.count()))
+
   private def profile2UserInfo(profile: UserProfile): UserInfo = {
     UserInfo(profile.id, profile.email, profile.emailVerified,
-      profile.mobileVerified, profile.status.toString)
-  }
-
-  private def profile2User(profile: UserProfile): User = {
-    User(id = profile.id, email = profile.email, password = null,
-      status = profile.status)
+      profile.mobile.getOrElse(""), profile.mobileVerified,
+      profile.realName.getOrElse(""), profile.status.toString)
   }
 
   def suspendUser(uid: Long): Future[ApiResult] = {

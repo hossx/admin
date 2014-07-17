@@ -16,6 +16,7 @@ POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
 
 GET     /user/search                  controllers.Users.search()
+GET     /user/totalcount              controllers.Users.totalCount()
 GET     /user/suspend/*id             controllers.Users.suspend(id: Long)
 GET     /user/resume/*id              controllers.Users.resume(id: Long)
 

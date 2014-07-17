@@ -16,6 +16,8 @@ import services.{UserService => AdminUserService}
 
 object Users extends Controller with Json4s {
 
+  val IdStart = 1000000000L
+
   def search = Authenticated {
     implicit request =>
     val data = request.queryString
@@ -26,7 +28,16 @@ object Users extends Controller with Json4s {
     val idFrom = strToLong(idFromStr).getOrElse(0L)
     val idTo = strToLong(idToStr).getOrElse(Long.MaxValue)
 
-    val result = AdminUserService.searchUser(userName, idFrom, idTo)
+    val from = if(idFrom < IdStart) idFrom + IdStart else idFrom
+    val to = if(idTo < IdStart) idTo + IdStart else idTo
+
+    val result = AdminUserService.searchUser(userName, from, to)
+    Ok(result.toJson)
+  }
+
+  def totalCount = Authenticated {
+    implicit request =>
+    val result = AdminUserService.totalCount
     Ok(result.toJson)
   }
 

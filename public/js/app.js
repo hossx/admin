@@ -128,6 +128,15 @@ app.config(httpConfig);
 
 app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.snapshots = 12;
+
+    $scope.getRegisteredUserCount = function() {
+        $http.get('/user/totalcount')
+            .success(function(data, status, headers, config) {
+                $scope.totalRegisteredUserCount = data.data;
+            })
+    };
+
+    $scope.getRegisteredUserCount();
 }]);
 
 app.controller('NotifyCtrl', ['$scope', '$http', function($scope, $http) {
