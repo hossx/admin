@@ -207,7 +207,8 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'BC', value: 'BC'},
         {text: 'DRK', value: 'DRK'},
         {text: 'VRC', value: 'VRC'},
-        {text: 'ZET', value: 'ZET'}
+        {text: 'ZET', value: 'ZET'},
+        {text: 'BTSX', value: 'BTSX'}
 
         ];
 
