@@ -14,6 +14,7 @@ GET     /monitor/actors/get           controllers.Admin.getActiveActors()
 GET     /transfer/get                 controllers.Admin.getTransfers()
 POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
+POST    /transfer/deposit             controllers.Admin.requestDeposit()
 
 GET     /user/search                  controllers.Users.search()
 GET     /user/totalcount              controllers.Users.totalCount()

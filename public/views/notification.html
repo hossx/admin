@@ -11,7 +11,7 @@
             <th>Title</th>
             <th>Content</th>
             <th>Notification Type</th>
-            <th>Removed</th>
+            <th>Disabled</th>
             <th>Created</th>
             <th>Updated</th>
             <th>Language</th>
@@ -27,7 +27,7 @@
             <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
             <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
             <th> {{item.lang}}</th>
-            <td> <button class="btn btn-danger" ng-click="remove(item)" >Remove</button> </td>
+            <td> <button ng-hide="{{item.removed}}" class="btn btn-danger" ng-click="remove(item)" >Disable</button> </td>
         </tr>
         </tbody>
     </table>

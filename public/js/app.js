@@ -60,7 +60,9 @@ app.filter('transferOperationText', function() {
 
 app.filter('transferSign', function() {
     return function(input) {
-        return input == 0 ? '+' : '-';
+        if (input == 0) return '+';
+        if (input == 1) return '-';
+        return '';
     };
 });
 
@@ -104,6 +106,10 @@ function routeConfig($routeProvider) {
         when('/transfer', {
             controller: 'TransferCtrl',
             templateUrl: 'views/transfer.html'
+        }).
+        when('/deposit', {
+            controller: 'DepositCtrl',
+            templateUrl: 'views/deposit.html'
         }).
         when('/monitor', {
             controller: 'MonitorCtrl',
@@ -199,18 +205,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'REORGING', value: 'REORGING'},
         {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'}];
 
-    $scope.currencyList = [
-        {text: 'ALL', value: 'ALL'},
-        {text: 'BTC', value: 'BTC'},
-        {text: 'LTC', value: 'LTC'},
-        {text: 'DOGE', value: 'DOGE'},
-        {text: 'BC', value: 'BC'},
-        {text: 'DRK', value: 'DRK'},
-        {text: 'VRC', value: 'VRC'},
-        {text: 'ZET', value: 'ZET'},
-        {text: 'BTSX', value: 'BTSX'}
-
-        ];
+    $scope.currencyList = COINPORT.currencyList;
 
     $scope.hotWallets = [];
     $scope.coldWallets = [];
@@ -260,6 +255,14 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
             });
     };
 
+    $scope.showConfirm = function(item) {
+        return item.status == 0 && (item.operation == 0 || item.operation == 1 || item.operation == 4)
+    };
+
+    $scope.showReject = function(item) {
+        return item.status == 0 && (item.operation == 0 || item.operation == 1 || item.operation == 4)
+    };
+
     $scope.reload = function() {
         $scope.loadTransfer();
         $scope.loadWallets();
@@ -268,6 +271,34 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.loadTransfer();
 
 }]);
+
+app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.currencyList = COINPORT.currencyList;
+    $scope.payload = {uid: '1000000000', currency: 'BTSX'};
+    $scope.deposit = function() {
+        if (!$scope.payload.currency || $scope.payload.currency=='ALL') {
+            alert('Select currency to deposit');
+            return;
+        }
+        if (!$scope.payload.uid || isNaN($scope.payload.uid) || (+$scope.payload.uid < 1000000000)) {
+            alert('Input UID of user whom you want to deposit to');
+            return;
+        }
+        if (!$scope.payload.amount || isNaN($scope.payload.amount)) {
+            alert('Input Amount of coin to deposit');
+            return;
+        }
+        console.log('deposit', $scope.payload);
+
+        $http.post('/transfer/deposit', $.param($scope.payload))
+          .success(function(data, status, headers, config) {
+            console.log('response', data);
+            alert(data.message);
+            window.location.hash='#/transfer';
+        });
+    };
+}]);
+
 
 app.controller('MonitorCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.reload = function () {

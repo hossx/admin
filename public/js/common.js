@@ -63,7 +63,20 @@ COINPORT = {
         DRK: 'http://explorer.darkcoin.io/tx/',
         VRC: 'http://blocks.vericoin.info/tx/',
         ZET: 'https://coinplorer.com/ZET/Transactions/'
-    }
+    },
+
+    currencyList: [
+      {text: 'ALL', value: 'ALL'},
+      {text: 'BTC', value: 'BTC'},
+      {text: 'LTC', value: 'LTC'},
+      {text: 'DOGE', value: 'DOGE'},
+      {text: 'BC', value: 'BC'},
+      {text: 'DRK', value: 'DRK'},
+      {text: 'VRC', value: 'VRC'},
+      {text: 'ZET', value: 'ZET'},
+      {text: 'BTSX', value: 'BTSX'}
+
+    ]
 };
 
 COINPORT.getPriceFixed = function(market) {

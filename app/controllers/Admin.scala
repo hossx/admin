@@ -1,6 +1,7 @@
 package controllers
 
 import _root_.play.api.mvc.Action
+import _root_.play.api.mvc.BodyParsers.parse
 import play.api._
 import play.api.mvc._
 import play.api.data._
@@ -14,6 +15,8 @@ import com.github.tototoshi.play2.json4s.native.Json4s
 import models.{User => AdminUser}
 import com.coinport.coinex.api.service.BitwayService
 import com.coinport.coinex.data.CryptoCurrencyAddressType
+import scala.concurrent.Future
+import com.coinport.coinex.api.service.AccountService
 
 object Admin extends Controller with Json4s {
   val loginForm = Form(
@@ -53,6 +56,18 @@ object Admin extends Controller with Json4s {
   def deposit = Authenticated {
     implicit request =>
     Ok(views.html.index()(request.session))
+  }
+
+  def requestDeposit = Authenticated.async(parse.urlFormEncoded) {
+    implicit request =>
+      val data = request.body
+      val uid = ControllerHelper.getParam(data, "uid", "1000000000").toLong
+      val amount = ControllerHelper.getParam(data, "amount", "0.0").toDouble
+      val currency: Currency = ControllerHelper.getParam(data, "currency", "")
+
+      AccountService.deposit(uid, currency, amount) map {
+        case result => Ok(result.toJson)
+      }
   }
 
   def getTransfers() = Action.async {
