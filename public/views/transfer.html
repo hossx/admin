@@ -49,7 +49,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in transfers | orderBy: ['-id']" class="{{item.operation|transferOperationClass}}">
+            <tr ng-repeat="item in transfers.items | orderBy: ['-id']" class="{{item.operation|transferOperationClass}}">
                 <td> {{item.id}} </td>
                 <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
                 <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
@@ -65,8 +65,9 @@
                 </td>
             </tr>
             </tbody>
-            <pagination boundary-links="true" total-items="snapshots.count" ng-model="snapshotsPage" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
         </table>
+        <pagination boundary-links="true" max-size="10" items-per-page="query.limit" total-items="transfers.count" ng-model="query.page" class="pagination-sm" ng-change="loadTransfer()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+
     </div>
     <div class="col-md-4">
         <table class="table table-striped table-condensed">

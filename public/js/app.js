@@ -1,4 +1,4 @@
-var app = angular.module('coinport.admin', ['ngRoute']);
+var app = angular.module('coinport.admin', ['ui.bootstrap', 'ngRoute']);
 
 // Filters
 app.filter('tStatus', function() {
@@ -210,15 +210,14 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.hotWallets = [];
     $scope.coldWallets = [];
 
-    $scope.query = {};
+    $scope.query = {page: 1, limit: 20};
+
     $scope.loadTransfer = function() {
-        $scope.query.skip = 0;
-        $scope.query.limit = 25;
         $scope.query.currency = $scope.currency;
+        console.log($scope.query);
         $http.get('/transfer/get', {params: $scope.query})
             .success(function (data, status, headers, config) {
-                $scope.transfers = data.data.items;
-                $scope.count = data.data.count;
+                $scope.transfers = data.data;
             });
     };
 

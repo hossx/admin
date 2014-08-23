@@ -73,6 +73,7 @@ object Admin extends Controller with Json4s {
   def getTransfers() = Action.async {
     implicit request =>
       val query = request.queryString
+      val pager = ControllerHelper.parsePagingParam()
       val status = getParam(query, "status").map(s => TransferStatus.valueOf(s).getOrElse(TransferStatus.Accepted))
       val types = getParam(query, "tType").map(s => TransferType.valueOf(s).getOrElse(TransferType.Withdrawal)) match {
         case Some(t) => Seq(t)
@@ -80,9 +81,8 @@ object Admin extends Controller with Json4s {
       }
       val currency = getParam(query, "currency").map(s => Currency.valueOf(s).getOrElse(Currency.Btc))
       val uid = getParam(query, "uid").map(_.toLong)
-      val skip = getParam(query, "skip").map(skip => skip.toInt).getOrElse(0)
-      val limit = getParam(query, "limit").map(limit => limit.toInt).getOrElse(15)
-      TransferService.getTransfers(uid, currency, status, None, types, Cursor(skip, limit)) map {
+
+      TransferService.getTransfers(uid, currency, status, None, types, Cursor(pager.skip, pager.limit)) map {
         case result =>
           Ok(result.toJson)
       }
