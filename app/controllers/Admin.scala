@@ -102,36 +102,6 @@ object Admin extends Controller with Json4s {
       Ok(ApiResult.toJson())
   }
 
-  def getPaymentWithdrawal() = Action.async {
-    implicit request =>
-      val query = request.queryString
-      val pager = ControllerHelper.parsePagingParam()
-      val status = getParam(query, "status").map(s => TransferStatus.valueOf(s).getOrElse(TransferStatus.Accepted))
-      val types = getParam(query, "tType").map(s => TransferType.valueOf(s).getOrElse(TransferType.Withdrawal)) match {
-        case Some(t) => Seq(t)
-        case None => Nil
-      }
-      val currency = getParam(query, "currency").map(s => Currency.valueOf(s).getOrElse(Currency.Btc))
-      val uid = getParam(query, "uid").map(_.toLong)
-
-      TransferService.getTransfers(uid, currency, status, None, types, Cursor(pager.skip, pager.limit), true) map {
-        case result =>
-          Ok(result.toJson)
-      }
-  }
-
-  def confirmPaymentWithdrawal(id: String) = Action {
-    implicit request =>
-      TransferService.AdminConfirmTransfer(id.toLong, true)
-      Ok(ApiResult.toJson())
-  }
-
-  def rejectPaymentWithdrawal(id: String) = Action {
-    implicit request =>
-      TransferService.AdminConfirmTransfer(id.toLong, false)
-      Ok(ApiResult.toJson())
-  }
-
   def getActiveActors() = Action.async {
     implicit request =>
       MonitorService.getActorsPath() map {
