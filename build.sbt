@@ -25,6 +25,7 @@ libraryDependencies ++= {
     "com.typesafe.akka"           %% "akka-slf4j"                       % akkaVersion,
     "com.typesafe.akka"           %% "akka-contrib"                     % akkaVersion,
     "com.typesafe.akka"           %% "akka-testkit"                     % akkaVersion,
+    "com.coinport"         %% "bitway-client"       % "0.0.9-SNAPSHOT",
     "org.json4s" %% "json4s-native" % "3.2.8",
     "org.json4s" %% "json4s-ext" % "3.2.8",
     "com.github.tototoshi" %% "play-json4s-native" % "0.2.0",

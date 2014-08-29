@@ -128,7 +128,10 @@ function routeConfig($routeProvider) {
             controller: 'UserCtrl',
             templateUrl: 'views/users.html'
         }).
-
+        when('/payment', {
+            controller: 'PaymentCtrl',
+            templateUrl: 'views/payment.html'
+        }).
         otherwise({
             redirectTo: '/'
         });
@@ -193,6 +196,54 @@ app.controller('NotifyCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.reload();
+}]);
+
+app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.transferStatus = [
+        {text: 'PENDING', value: 'PENDING'},
+        {text: 'ACCEPTED', value: 'ACCEPTED'},
+        {text: 'CONFIRMING', value: 'CONFIRMING'},
+        {text: 'CONFIRMED', value: 'CONFIRMED'},
+        {text: 'SUCCEEDED', value: 'SUCCEEDED'},
+        {text: 'FAILED', value: 'FAILED'},
+        {text: 'REORGING', value: 'REORGING'},
+        {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'}];
+
+    $scope.currencyList = COINPORT.currencyList;
+
+    $scope.loadTransfer = function() {
+        $scope.query.currency = $scope.currency;
+        console.log($scope.query);
+        $http.get('/transfer/get', {params: $scope.query})
+            .success(function (data, status, headers, config) {
+                $scope.transfers = data.data;
+            });
+    };
+
+    $scope.transferConfirm = function(item) {
+        item.status = -1;
+        $http.post('/transfer/confirm/' + item.id, {})
+            .success(function(data, status, headers, config) {
+                console.log('request:', $scope.notification, ' response:', data);
+                setTimeout($scope.loadTransfer, 1000);
+            });
+    };
+
+    $scope.transferReject = function(item) {
+        item.status = -1;
+        $http.post('/transfer/reject/' + item.id, {})
+            .success(function(data, status, headers, config) {
+                console.log('request:', $scope.notification, ' response:', data);
+                setTimeout($scope.loadTransfer, 1000);
+            });
+    };
+
+    $scope.reload = function() {
+        $scope.loadTransfer();
+        $scope.loadWallets();
+    };
+
+    $scope.loadTransfer();
 }]);
 
 app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
