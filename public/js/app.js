@@ -214,7 +214,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.loadTransfer = function() {
         $scope.query.currency = $scope.currency;
         console.log($scope.query);
-        $http.get('/transfer/get', {params: $scope.query})
+        $http.get('/payment/transfer/get', {params: $scope.query})
             .success(function (data, status, headers, config) {
                 $scope.transfers = data.data;
             });
@@ -222,7 +222,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
     $scope.transferConfirm = function(item) {
         item.status = -1;
-        $http.post('/transfer/confirm/' + item.id, {})
+        $http.post('/payment/transfer/confirm/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
                 setTimeout($scope.loadTransfer, 1000);
@@ -231,7 +231,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
     $scope.transferReject = function(item) {
         item.status = -1;
-        $http.post('/transfer/reject/' + item.id, {})
+        $http.post('/payment/transfer/reject/' + item.id, {})
             .success(function(data, status, headers, config) {
                 console.log('request:', $scope.notification, ' response:', data);
                 setTimeout($scope.loadTransfer, 1000);

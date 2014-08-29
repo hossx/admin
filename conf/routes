@@ -16,6 +16,10 @@ POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
 POST    /transfer/deposit             controllers.Admin.requestDeposit()
 
+GET     /payment/transfer/get               controllers.Admin.getPaymentWithdrawal()
+POST    /payment/transfer/confirm/*id       controllers.Admin.confirmPaymentWithdrawal(id)
+POST    /payment/transfer/reject/*id        controllers.Admin.confirmPaymentWithdrawal(id)
+
 GET     /user/search                  controllers.Users.search()
 GET     /user/totalcount              controllers.Users.totalCount()
 GET     /user/suspend/*id             controllers.Users.suspend(id: Long)
