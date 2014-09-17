@@ -19,7 +19,7 @@ POST    /transfer/deposit             controllers.Admin.requestDeposit()
 GET     /payment/transfer/get               controllers.Payment.getPaymentWithdrawal()
 POST    /payment/transfer/succeed/*id       controllers.Payment.paymentWithdrawalSucceed(id)
 POST    /payment/transfer/failed/*id        controllers.Payment.paymentWithdrawalFailed(id)
-POST    /payment/transfer/processed/*id        controllers.Payment.paymentWithdrawalProcessed(id)
+##POST    /payment/transfer/processed/*id        controllers.Payment.paymentWithdrawalProcessed(id)
 
 GET     /user/search                  controllers.Users.search()
 GET     /user/totalcount              controllers.Users.totalCount()

@@ -198,7 +198,7 @@ app.controller('NotifyCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.reload();
 }]);
 
-app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
+app.controller('TransferCtrl2', ['$scope', '$http', function($scope, $http) {
     $scope.transferStatus = [
         {text: 'PENDING', value: 'PENDING'},
         {text: 'ACCEPTED', value: 'ACCEPTED'},

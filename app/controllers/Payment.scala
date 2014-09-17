@@ -42,7 +42,7 @@ object Payment  extends Controller with PaymentAccess {
   def paymentWithdrawalSucceed(id: String) = Action {
     implicit request =>
       val transfer = getTransfer(id.toLong, request.body.asFormUrlEncoded.get)
-      routers.accountActor ? AdminConfirmTransferSuccess(transfer, None)
+      routers.accountActor ? AdminConfirmTransferSuccess(transfer)
       Ok(Json.obj())
   }
 
@@ -54,12 +54,12 @@ object Payment  extends Controller with PaymentAccess {
       Ok(Json.obj())
   }
 
-  def paymentWithdrawalProcessed(id: String) = Action {
-    implicit request =>
-      val transfer = getTransfer(id.toLong, request.body.asFormUrlEncoded.get)
-      routers.accountActor ? AdminConfirmTransferProcessed(transfer)
-      Ok(Json.obj())
-  }
+  // def paymentWithdrawalProcessed(id: String) = Action {
+  //   implicit request =>
+  //     val transfer = getTransfer(id.toLong, request.body.asFormUrlEncoded.get)
+  //     routers.accountActor ? AdminConfirmTransferProcessed(transfer)
+  //     Ok(Json.obj())
+  // }
 
   private def getTransfer(id: Long, data: Map[String, Seq[String]]): AccountTransfer = {
     val cur = getParam(data, "currency").get
