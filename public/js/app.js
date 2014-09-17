@@ -272,11 +272,15 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.showConfirm = function(item) {
-        return item.status == 0 && (item.operation == 0 || item.operation == 1 || item.operation == 4)
+        return (item.status == 0 || item.status == 7 ||
+                item.status == 10 || item.status == 11 || item.status == 12) &&
+            (item.operation == 0 || item.operation == 1 || item.operation == 4)
     };
 
     $scope.showReject = function(item) {
-        return item.status == 0 && (item.operation == 0 || item.operation == 1 || item.operation == 4)
+        return (item.status == 0 || item.status == 7 ||
+                item.status == 10 || item.status == 11 || item.status == 12) &&
+            (item.operation == 0 || item.operation == 1 || item.operation == 4)
     };
 
     $scope.reload = function() {
