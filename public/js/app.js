@@ -14,6 +14,13 @@ app.filter('tStatus', function() {
             case 7: return 'REORGING_SUCCEEDED';
             case 8: return 'CANCELLED';
             case 9: return 'REJECTED';
+            case 10: return 'HOT_INSUFFICIENT';
+            case 11: return 'PROCESSING';
+            case 12: return 'BITWAY_FAILED';
+            case 13: return 'PROCESSED_FAIL';
+            case 14: return 'CONFIRM_BITWAY_FAIL';
+            case 15: return 'REORGING_FAIL';
+            case 16: return 'HOT_INSUFFICIENT_FAIL';
             case -1: return 'Operating...';
             default: return 'UNKNOWN';
         }
@@ -203,7 +210,17 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'SUCCEEDED', value: 'SUCCEEDED'},
         {text: 'FAILED', value: 'FAILED'},
         {text: 'REORGING', value: 'REORGING'},
-        {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'}];
+        {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'},
+        {text: 'CANCELLED', value: 'CANCELLED'},
+        {text: 'REJECTED', value: 'REJECTED'},
+        {text: 'HOT_INSUFFICIENT', value: 'HOT_INSUFFICIENT'},
+        {text: 'PROCESSING', value: 'PROCESSING'},
+        {text: 'BITWAY_FAILED', value: 'BITWAY_FAILED'},
+        {text: 'PROCESSED_FAIL', value: 'PROCESSED_FAIL'},
+        {text: 'CONFIRM_BITWAY_FAIL', value: 'CONFIRM_BITWAY_FAIL'},
+        {text: 'REORGING_FAIL', value: 'REORGING_FAIL'},
+        {text: 'HOT_INSUFFICIENT_FAIL', value: 'HOT_INSUFFICIENT_FAIL'}
+    ];
 
     $scope.currencyList = COINPORT.currencyList;
 
