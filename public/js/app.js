@@ -36,6 +36,7 @@ app.filter('tType', function() {
             case 3: return 'HOT_TO_COLD';
             case 4: return 'COLD_TO_HOT';
             case 5: return 'UNKNOWN';
+            case 6: return 'DEPOSIT_HOT';
             default: return 'UNKNOWN';
         }
     }
@@ -200,6 +201,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'USER_TO_HOT', value: 'USER_TO_HOT'},
         {text: 'HOT_TO_COLD', value: 'HOT_TO_COLD'},
         {text: 'COLD_TO_HOT', value: 'COLD_TO_HOT'},
+        {text: 'DEPOSIT_HOT', value: 'DEPOSIT_HOT'},
         {text: 'UNKNOWN', value: 'UNKNOWN'}];
 
     $scope.transferStatus = [
