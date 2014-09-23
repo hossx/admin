@@ -75,6 +75,7 @@ COINPORT = {
       {text: 'VRC', value: 'VRC'},
       {text: 'ZET', value: 'ZET'},
       {text: 'BTSX', value: 'BTSX'},
+      {text: 'XRP', value: 'XRP'},
       {text: 'NXT', value: 'NXT'}
     ]
 };
