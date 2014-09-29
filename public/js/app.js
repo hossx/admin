@@ -198,10 +198,10 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.transferTypes = [
         {text: 'DEPOSIT', value: 'DEPOSIT'},
         {text: 'WITHDRAWAL', value: 'WITHDRAWAL'},
-        {text: 'USER_TO_HOT', value: 'USER_TO_HOT'},
-        {text: 'HOT_TO_COLD', value: 'HOT_TO_COLD'},
-        {text: 'COLD_TO_HOT', value: 'COLD_TO_HOT'},
-        {text: 'DEPOSIT_HOT', value: 'DEPOSIT_HOT'},
+        {text: 'USER_TO_HOT', value: 'USERTOHOT'},
+        {text: 'HOT_TO_COLD', value: 'HOTTOCOLD'},
+        {text: 'COLD_TO_HOT', value: 'COLDTOHOT'},
+        {text: 'DEPOSIT_HOT', value: 'DEPOSITHOT'},
         {text: 'UNKNOWN', value: 'UNKNOWN'}];
 
     $scope.transferStatus = [
@@ -212,16 +212,16 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         {text: 'SUCCEEDED', value: 'SUCCEEDED'},
         {text: 'FAILED', value: 'FAILED'},
         {text: 'REORGING', value: 'REORGING'},
-        {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'},
+        {text: 'REORGING_SUCCEEDED', value: 'REORGINGSUCCEEDED'},
         {text: 'CANCELLED', value: 'CANCELLED'},
         {text: 'REJECTED', value: 'REJECTED'},
-        {text: 'HOT_INSUFFICIENT', value: 'HOT_INSUFFICIENT'},
+        {text: 'HOT_INSUFFICIENT', value: 'HOTINSUFFICIENT'},
         {text: 'PROCESSING', value: 'PROCESSING'},
-        {text: 'BITWAY_FAILED', value: 'BITWAY_FAILED'},
-        {text: 'PROCESSED_FAIL', value: 'PROCESSED_FAIL'},
-        {text: 'CONFIRM_BITWAY_FAIL', value: 'CONFIRM_BITWAY_FAIL'},
-        {text: 'REORGING_FAIL', value: 'REORGING_FAIL'},
-        {text: 'HOT_INSUFFICIENT_FAIL', value: 'HOT_INSUFFICIENT_FAIL'}
+        {text: 'BITWAY_FAILED', value: 'BITWAYFAILED'},
+        {text: 'PROCESSED_FAIL', value: 'PROCESSEDFAIL'},
+        {text: 'CONFIRM_BITWAY_FAIL', value: 'CONFIRMBITWAYFAIL'},
+        {text: 'REORGING_FAIL', value: 'REORGINGFAIL'},
+        {text: 'HOT_INSUFFICIENT_FAIL', value: 'HOTINSUFFICIENTFAIL'}
     ];
 
     $scope.currencyList = COINPORT.currencyList;
