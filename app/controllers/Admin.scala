@@ -82,7 +82,7 @@ object Admin extends Controller with Json4s {
       val currency = getParam(query, "currency").map(s => Currency.valueOf(s).getOrElse(Currency.Btc))
       val uid = getParam(query, "uid").map(_.toLong)
 
-      TransferService.getTransfers(uid, currency, status, None, types, Cursor(pager.skip, pager.limit)) map {
+      TransferService.getTransfers(uid, currency, status, None, types, Cursor(pager.skip, pager.limit), true) map {
         case result =>
           Ok(result.toJson)
       }
