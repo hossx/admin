@@ -67,6 +67,7 @@ COINPORT = {
 
     currencyList: [
       {text: 'ALL', value: 'ALL'},
+      {text: 'CNY', value: 'CNY'},
       {text: 'BTC', value: 'BTC'},
       {text: 'LTC', value: 'LTC'},
       {text: 'DOGE', value: 'DOGE'},

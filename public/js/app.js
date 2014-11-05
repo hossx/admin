@@ -349,7 +349,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
 app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.currencyList = COINPORT.currencyList;
-    $scope.payload = {uid: '1000000000', currency: 'BTSX'};
+    $scope.payload = {uid: '1000000000', currency: 'CNY'};
     $scope.deposit = function() {
         if (!$scope.payload.currency || $scope.payload.currency=='ALL') {
             alert('Select currency to deposit');
