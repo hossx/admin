@@ -7,7 +7,7 @@ resolvers ++= Seq(
 )
 
 // Use the Play sbt plugin for Play projects
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3-SNAPSHOT")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.6")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.0")
 
