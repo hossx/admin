@@ -210,6 +210,7 @@ app.controller('TransferCtrl2', ['$scope', '$http', function($scope, $http) {
         {text: 'REORGING_SUCCEEDED', value: 'REORGING_SUCCEEDED'}];
 
     $scope.currencyList = COINPORT.currencyList;
+    $scope.manualCurrencyList = COINPORT.manualCurrencyList;
 
     $scope.loadTransfer = function() {
         $scope.query.currency = $scope.currency;
@@ -278,6 +279,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     ];
 
     $scope.currencyList = COINPORT.currencyList;
+    $scope.manualCurrencyList = COINPORT.manualCurrencyList;
 
     $scope.hotWallets = [];
     $scope.coldWallets = [];
@@ -349,6 +351,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
 app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.currencyList = COINPORT.currencyList;
+    $scope.manualCurrencyList = COINPORT.manualCurrencyList;
     $scope.payload = {uid: '1000000000', currency: 'CNY'};
     $scope.deposit = function() {
         if (!$scope.payload.currency || $scope.payload.currency=='ALL') {

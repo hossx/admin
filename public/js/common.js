@@ -78,6 +78,11 @@ COINPORT = {
       {text: 'BTSX', value: 'BTSX'},
       {text: 'XRP', value: 'XRP'},
       {text: 'NXT', value: 'NXT'}
+    ],
+
+    manualCurrencyList: [
+      {text: 'CNY', value: 'CNY'},
+      {text: 'GOOC', value: 'GOOC'}
     ]
 };
 
