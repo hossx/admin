@@ -54,7 +54,7 @@
                 <td> {{item.id}} </td>
                 <td> {{item.created | date:"MM-dd HH:mm:ss"}} </td>
                 <td> {{item.updated | date:"MM-dd HH:mm:ss"}} </td>
-                <td> <a target="_blank" href="https://coinport.com/user/{{item.uid}}">{{item.uid}}</a></td>
+                <td> <a target="_blank" href="https://exchange.coinport.com/user/{{item.uid}}">{{item.uid}}</a></td>
                 <td> <span class="badge badge-{{item.operation|transferOperationClass}}">{{item.operation | tType}}</span> </td>
                 <td> {{item.amount.currency}} </td>
                 <td> <b>{{item.operation | transferSign}} {{item.amount.value | quantity}}</b> </td>
