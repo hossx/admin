@@ -77,7 +77,8 @@ COINPORT = {
       {text: 'ZET', value: 'ZET'},
       {text: 'BTSX', value: 'BTSX'},
       {text: 'XRP', value: 'XRP'},
-      {text: 'NXT', value: 'NXT'}
+      {text: 'NXT', value: 'NXT'},
+      {text: 'GOOC', value: 'GOOC'}
     ],
 
     manualCurrencyList: [
