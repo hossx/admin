@@ -5,6 +5,9 @@ GET     /login                        controllers.Admin.login
 POST    /login                        controllers.Admin.authenticate
 GET     /logout                       controllers.Admin.logout
 
+GET     /smsverification2             controllers.VerifyController.sendVerifySms2()
+GET     /emailverification            controllers.VerifyController.sendVerificationEmail()
+
 GET     /deposit                      controllers.Admin.deposit
 
 GET     /notifications/get            controllers.Admin.getNotifications()
