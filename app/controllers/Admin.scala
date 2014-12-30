@@ -31,17 +31,29 @@ object Admin extends Controller with Json4s {
   /**
    * Login page.
    */
-  def login = Action {
-    implicit request =>
+  def login = Action { implicit request =>
       Ok(views.html.login(loginForm))
   }
 
-  def authenticate = Action {
-    implicit request =>
-      loginForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.login(formWithErrors)),
-        user => Redirect(routes.Admin.index).withSession("email" -> user._1)
-      )
+  def authenticate = Action.async(parse.urlFormEncoded) { implicit request =>
+      val data = request.body
+      val email     = getParam(data, "email").getOrElse("")
+      val password  = getParam(data, "password").getOrElse("")
+      val emailUuid = getParam(data, "emailuuid").getOrElse("")
+      val emailCode = getParam(data, "emailcode").getOrElse("")
+
+      ControllerHelper.validateParamsAndThen(
+        new CachedValueValidator(ErrorCode.InvalidEmailVerifyCode, true, emailUuid, emailCode),
+        new PasswordValidator(email, password)) {
+          ControllerHelper.popCachedValue(emailUuid)
+          Future(ApiResult(true, ErrorCode.Ok.value, "succeed", None))
+        } map { result =>
+            if (result.success) {
+              Ok(result.toJson).withSession("email" -> email)
+            } else {
+              Ok(result.toJson)
+            }
+        }
   }
 
   def logout = Action {

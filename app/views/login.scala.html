@@ -1,44 +1,47 @@
 @(form: Form[(String,String)])(implicit flash: Flash, session: Session)
 
-<html>
+<html ng-app="admin.login">
     <head>
         <title>Coinport Admin</title>
+        <script src="@routes.Assets.at("lib/angular/angular.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("lib/jquery-1.11.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("js/login.js")" type="text/javascript"></script>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("image/favicon.png")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("css/login.css")">
     </head>
-    <body>
+    <body ng-controller="LoginController as loginCtrl">
 
         <header>
             <a href="@routes.Admin.index" id="logo"><span>Coin</span>port</a>
         </header>
 
-        @helper.form(routes.Admin.authenticate) {
-
-            <h1>Sign in</h1>
-
-            @form.globalError.map { error =>
-                <p class="error">
-                    @error.message
-                </p>
-            }
-
-            @flash.get("success").map { message =>
-                <p class="success">
-                    @message
-                </p>
-            }
-
-            <p>
-                <input type="email" name="email" placeholder="Email" id="email" value="@form("email").value">
-            </p>
-            <p>
-                <input type="password" name="password" id="password" placeholder="Password">
-            </p>
-            <p>
-                <button type="submit" id="loginbutton">Login</button>
-            </p>
-
-        }
+        <div class="box-sm" ng-controller="LoginController as loginCtrl">
+            <div class="list-group-item">
+                <input type="email" name="email" placeholder="phone" class="form-control" ng-model="loginCtrl.verifyPhone">
+            </div>
+            <button ng-click="loginCtrl.getPhoneCode()"> send </button>
+            <div class="list-group-item">
+                <input type="email" name="email" placeholder="email" class="form-control" ng-model="loginCtrl.verifyEmail">
+            </div>
+            <button ng-click="loginCtrl.getEmailCode()"> send </button>
+            <form name="form" method="POST" ng-submit="loginCtrl.login()">
+                <div class="list-group list-group-lg">
+                    <div class="list-group-item">
+                        <input type="email" name="email" placeholder="email" class="form-control" ng-model="loginCtrl.email">
+                    </div>
+                    <div class="list-group-item">
+                        <input type="password" name="password" placeholder="password" class="form-control" ng-model="loginCtrl.password">
+                    </div>
+                    <div class="list-group-item">
+                        <input type="text" placeholder="emailcode" class="form-control" ng-model="loginCtrl.emailCode">
+                    </div>
+                    <div class="list-group-item">
+                        <button type="submit" class="btn btn-lg btn-primary btn-block">登录</button>
+                    </div>
+                    <div class="line line-dashed"></div>
+                </div>
+            </form>
+        </div>
 
         <p class="note">
             2014 © Coinport.

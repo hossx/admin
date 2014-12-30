@@ -31,6 +31,10 @@ libraryDependencies ++= {
     "com.github.tototoshi"        %% "play-json4s-native"               % "0.2.0",
     "com.github.tototoshi"        %% "play-json4s-test-native"          % "0.2.0" % "test",
     "com.coinport"                %% "coinex-client"                    % coinexVersion,
-    "com.typesafe.akka"           %% "akka-remote"                      % "2.3.4"
+    "com.typesafe.akka"           %% "akka-remote"                      % "2.3.4",
+    "com.twilio.sdk"              %  "twilio-java-sdk"                  % "3.4.1",
+    "net.debasishg"               %% "redisclient"                      % "2.12",
+    "com.octo.captcha"            %  "jcaptcha"                         % "1.0",
+    "com.cloopen"                 %  "restsdk"                          % "2.6.1"
   )
 }
