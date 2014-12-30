@@ -29,8 +29,8 @@
                 'emailcode' : this.emailCode,
             };
             $http.post('login', $.param(loginInfo)).success(function(data, status, headers, config) {
-                if (data.result === 'success') {
-                    $window.location.href = '/index';
+                if (data.success === true) {
+                    $window.location.href = '/#/';
                 } else {
                     alert('login failed');
                 }
