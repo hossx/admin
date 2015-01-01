@@ -37,10 +37,11 @@ object Admin extends Controller with Json4s {
 
   def authenticate = Action.async(parse.urlFormEncoded) { implicit request =>
       val data = request.body
-      val email     = getParam(data, "email").getOrElse("")
-      val password  = getParam(data, "password").getOrElse("")
-      val emailUuid = getParam(data, "emailuuid").getOrElse("")
-      val emailCode = getParam(data, "emailcode").getOrElse("")
+      val email       = getParam(data, "email").getOrElse("")
+      val password    = getParam(data, "password").getOrElse("")
+      val emailUuid   = getParam(data, "emailuuid").getOrElse("")
+      val emailCode   = getParam(data, "emailcode").getOrElse("")
+      val verifiedEmail = getParam(data, "verifiedemail").getOrElse("")
 
       ControllerHelper.validateParamsAndThen(
         new CachedValueValidator(ErrorCode.InvalidEmailVerifyCode, true, emailUuid, emailCode),
@@ -49,7 +50,7 @@ object Admin extends Controller with Json4s {
           Future(ApiResult(true, ErrorCode.Ok.value, "succeed", None))
         } map { result =>
             if (result.success) {
-              Ok(result.toJson).withSession("email" -> email)
+              Ok(result.toJson).withSession("email" -> email, "ve" -> verifiedEmail)
             } else {
               Ok(result.toJson)
             }

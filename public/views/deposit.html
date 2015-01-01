@@ -33,8 +33,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 col-lg-2 control-label">Currency</label>
                     <div class="col-sm-9 col-lg-10 controls">
-                      <select class="form-control" tabindex="1" ng-options="t.value as t.text for t in manualCurrencyList" ng-model="payload.currency"></select>
-                      <!--<input class="form-control" disabled="disabled" type="text" ng-model="payload.currency" />-->
+                      <select class="form-control" tabindex="1" ng-options="t.value as t.text for t in manualCurrencyList" ng-model="payload.currency" ng-show="payload.ve=='c@coinport.com'"></select>
+                      <input class="form-control" disabled="disabled" type="text" ng-model="payload.currency" ng-hide="payload.ve=='c@coinport.com'"/>
                     </div>
                 </div>
 

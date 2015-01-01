@@ -27,6 +27,7 @@
                 'password': this.password,
                 'emailuuid' : this.emailUuid,
                 'emailcode' : this.emailCode,
+                'verifiedemail' : this.verifyEmail,
             };
             $http.post('login', $.param(loginInfo)).success(function(data, status, headers, config) {
                 if (data.success === true) {

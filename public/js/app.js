@@ -350,9 +350,18 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 }]);
 
 app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
+    var selectedCurrency = 'CNY';
+    if (operator === 'yangli@coinport.com') {
+        selectedCurrency = 'GOOC';
+    } else if (operator === 'xiaolu@coinport.com') {
+        selectedCurrency = 'CNY';
+    } else {
+        selectedCurrency = 'CNY';
+    }
+
     $scope.currencyList = COINPORT.currencyList;
     $scope.manualCurrencyList = COINPORT.manualCurrencyList;
-    $scope.payload = {uid: '1000000000', currency: 'CNY'};
+    $scope.payload = {uid: '1000000000', currency: selectedCurrency, ve: operator};
     $scope.deposit = function() {
         if (!$scope.payload.currency || $scope.payload.currency=='ALL') {
             alert('Select currency to deposit');
