@@ -8,74 +8,126 @@ import pymongo
 import urllib
 import urllib2
 import sys
+import time
+from GoocTx import GoocTx
 
 __author__ = 'c@coinport.com (Ma Chao)'
+
 MAXINT = sys.maxint
+MAXRETRY = 3
 
 client = pymongo.MongoClient('localhost', 27017)
 db = client['gooc']
-collection = db['txs']
-cursor = db['cursor']
+dTxsC = db['dTxs']
+cursorC = db['cursor']
 
-def getGoocTxJson(minTxid, maxTxid):
+def getGoocDepositTxs(minTxid, maxTxid):
     requrl = 'http://localhost:9000/GooCoin/rest/tx/partner/history'
     reqdata = { 'minId':minTxid, 'maxId':maxTxid, 'pageSize':20, 'address':'1DuwDsv2W3v5XyXT7RAvwtFHtnSnWveHse'}
     headerdata = {'Content-Type':'application/json'}
 
     req = urllib2.Request(url = requrl, headers=headerdata, data =json.dumps(reqdata))
     try:
-        res = urllib2.urlopen(req, timeout=1)
+        res = urllib2.urlopen(req, timeout = 10)
+        time.sleep(2)
     except:
         return None
-    return res.read()
+    resStr = res.read()
+    if (resStr == None):
+        return None
+    response = json.loads(resStr)
+    if (response == None or response['status'] != 'OK'):
+        return None
+    return response['records']
 
-def getFakeGoocTxJson():
+def getFakeGoocDepositTxs(minTxid, maxTxid):
+    batchNum = 4
     inf = open('gooc_tx')
     res = inf.read()
     inf.close()
-    return res
+    response = json.loads(res)
+    if (response == None or response['status'] != 'OK'):
+        return None
+    txs = response['records']
+    retTxs = []
+    for tx in txs:
+        if (tx['transactionId'] > minTxid and tx['transactionId'] < maxTxid and
+            (tx['phoneB'] == '15026841984' or tx['phoneB'] == '50001')):
+            retTxs.append(tx)
+        if (len(retTxs) == batchNum):
+            break;
+    return retTxs
 
 def fetchNewGoocTx(currentMinTxid, lastTxId):
     minTxid = currentMinTxid
     meetLastTx = False
-    res = getFakeGoocTxJson()
-    # res = getGoocTxJson(lastTxId, currentMinTxid)
-    if (res == None):
-        return None
-    goocResponse = json.loads(res)
-    if (goocResponse == None or goocResponse['status'] != 'OK'):
+    goocTxs = getFakeGoocDepositTxs(lastTxId, currentMinTxid)
+    # goocTxs = getGoocDepositTxs(lastTxId, currentMinTxid)
+    if (goocTxs == None):
         return (None, False, minTxid)
-    goocTxs = goocResponse['records']
     retTxs = []
     for tx in goocTxs:
-        txid = tx['transactionId']
-        if (txid > lastTxId + 1):
-            retTxs.append(GoocTx(tx))
-        elif (txid == lastTxId + 1):
+        gtx = GoocTx(tx)
+        if (gtx._id > lastTxId + 1):
+            retTxs.append(gtx)
+        elif (gtx._id == lastTxId + 1):
             meetLastTx = True
-        minTxid = min(minTxid, txid)
+        minTxid = min(minTxid, gtx._id)
     if (lastTxId == -1):
-            meetLastTx = True
+        meetLastTx = True
     return (retTxs, meetLastTx, minTxid)
 
 def saveNewGoocTx(txs):
-    if (not len(txs) > 0):
+    if (txs == None or not len(txs) > 0):
         return
-    # cursor.update({"_id":0}, {"_id": 0, "txid": 213591975}, True)
+    for tx in txs:
+        try:
+            dTxsC.insert(tx.__dict__)
+        except:
+            print 'try to insert exists item: ', tx.__dict__;
+
+def getMaxTxid(txs):
+    if (txs == None):
+        return 0
+    maxId = 0
+    for tx in txs:
+        maxId = max(maxId, tx._id)
+    return maxId
+
 
 def fetchNewTxsSinceLastFetch():
-    txCursor = cursor.find_one()
-    lastTxId = txCursor['txid']
+    txCursor = cursorC.find_one()
+    if (txCursor == None):
+        lastTxId = 0
+    else:
+        lastTxId = txCursor['txid']
     if (lastTxId == None):
         lastTxId = 0
+    maxId = lastTxId
+    retryTimes = 0
     (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(MAXINT, lastTxId - 1)
     saveNewGoocTx(newGoocTxs)
+    if (newGoocTxs == None):
+        retryTimes += 1
+    maxId = max(maxId, getMaxTxid(newGoocTxs))
     while (not meetLastTx):
-        (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(currentMinTxid, lastTxId -1 )
+        (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(currentMinTxid, lastTxId - 1)
         saveNewGoocTx(newGoocTxs)
+        if (newGoocTxs == None):
+            retryTimes += 1
+            if (retryTimes == MAXRETRY):
+                break;
+        else:
+            retryTimes = 0
+        maxId = max(maxId, getMaxTxid(newGoocTxs))
+    cursorC.update({"_id":0}, {"_id": 0, "txid": maxId}, True)
 
 def main():
-    fetchNewTxsSinceLastFetch()
+    while True:
+        print 'fetching latest deposit txs...'
+        fetchNewTxsSinceLastFetch()
+        print 'finished'
+        time.sleep(10)
 
 if __name__ == '__main__':
     main()
