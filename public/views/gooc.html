@@ -22,7 +22,7 @@
         </tr>
         </tbody>
     </table>
-    <div class="col-md-8">
+    <div class="col-md-11">
         <table class="table table-striped">
             <thead>
             <tr>
@@ -48,7 +48,7 @@
                 <td> {{item.c}} </td>
                 <td>
                     <a target="_blank" ng-show="item.cpuid != ''" href="https://exchange.coinport.com/user/{{item.cpuid}}">{{item.cpuid}}</a>
-                    <input ng-show="item.cpuid == ''" ng-model="settedUid"></input>
+                    <input ng-show="item.cpuid == '' && item.ty == 'DEPOSIT' && item.cps != 'FAILED'" ng-model="item.inputUid"></input>
                 </td>
                 <td> {{item.ty}} </td>
                 <td> <b>{{item.ty | goocTransferSign}} {{item.a | quantity}}</b> </td>

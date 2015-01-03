@@ -373,7 +373,7 @@ app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.goocQuery = {page: 1, limit: 20};
 
     $scope.loadGoocTxs = function() {
-        $http.get('/gooctx/get', {params: $scope.query})
+        $http.get('/gooctx/get', {params: $scope.goocQuery})
             .success(function (data, status, headers, config) {
                 $scope.goocTxs = data.data;
             });
@@ -386,24 +386,26 @@ app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.showButton = function(item) {
-        return (item.cps == 'BAD_FORM' && item.ty == 'DEPOSIT')
+        return (item.cps == 'BAD_FORM' && item.ty == 'DEPOSIT' && item.status != -1)
     };
 
     $scope.transferConfirm = function(item) {
         item.status = -1;
-        $http.post('/transfer/confirm/' + item.id, {})
-            .success(function(data, status, headers, config) {
-                console.log('request:', $scope.notification, ' response:', data);
-                setTimeout($scope.loadTransfer, 1000);
-            });
+        if (!item.inputUid || item.inputUid == '') {
+            alert('请填入用户币丰港ID');
+        } else {
+            $http.post('/gooctx/confirm', $.param(item))
+                .success(function(data, status, headers, config) {
+                    setTimeout($scope.loadGoocTxs, 1000);
+                });
+        }
     };
 
     $scope.transferReject = function(item) {
         item.status = -1;
-        $http.post('/transfer/reject/' + item.id, {})
+        $http.post('/gooctx/reject/' + item._id, {})
             .success(function(data, status, headers, config) {
-                console.log('request:', $scope.notification, ' response:', data);
-                setTimeout($scope.loadTransfer, 1000);
+                setTimeout($scope.loadGoocTxs, 1000);
             });
     };
 }]);

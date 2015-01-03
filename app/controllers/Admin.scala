@@ -108,7 +108,7 @@ object Admin extends Controller with Json4s {
       if (status.isDefined)
         q += ("cps" -> status.get)
       if (gid.isDefined)
-        q += ("_id" -> gid.get)
+        q += ("_id" -> new java.lang.Long(gid.get.toLong))
       val txs = txCollection.find(q).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
       Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, txs.size))).toJson)
   }
@@ -146,6 +146,49 @@ object Admin extends Controller with Json4s {
         case result =>
           Ok(result.toJson)
       }
+  }
+
+  def confirmGoocTx() = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+      val data = request.body
+      val goocId = new java.lang.Long(ControllerHelper.getParam(data, "_id", "0").toLong)
+      if (goocId == 0) {
+        Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "gooc id can't be null").toJson))
+      } else {
+        val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
+        if (!tx.isDefined) {
+          Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
+        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM") {
+          Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be confirmed").toJson))
+        } else {
+          val uid = ControllerHelper.getParam(data, "inputUid", "1000000000").toLong
+          val amount = ControllerHelper.getParam(data, "a", "0.0").toDouble
+          val currency: Currency = Currency.Gooc
+
+          AccountService.deposit(uid, currency, amount) map { case result =>
+            if (result.success) {
+              val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
+              txCollection.update(MongoDBObject("_id" -> goocId),
+                $set("cps" -> "PROCESSED", "cptxid" -> cptxid, "cpuid" -> uid), false, false, WriteConcern.Safe)
+            } else {
+              txCollection.update(MongoDBObject("_id" -> goocId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+            }
+            Ok(result.toJson)
+          }
+        }
+      }
+  }
+
+  def rejectGoocTx(gid: String) = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+    val goocId = new java.lang.Long(gid.toLong)
+    val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
+    if (!tx.isDefined) {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
+    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM") {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be rejected").toJson))
+    } else {
+      txCollection.update(MongoDBObject("_id" -> goocId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+      Future(Ok(ApiResult(true, ErrorCode.Ok.value, "gooc tx ${goocId} is rejected").toJson))
+    }
   }
 
   def confirmTransfer(id: String) = Action {
