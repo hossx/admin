@@ -75,6 +75,14 @@ app.filter('transferSign', function() {
     };
 });
 
+app.filter('goocTransferSign', function() {
+    return function(input) {
+        if (input == 'DEPOSIT') return '+';
+        if (input == 'WITHDRAWAL') return '-';
+        return '';
+    };
+});
+
 app.filter('transferOperationClass', function() {
     return function(input) {
         if (input == 0) return 'success';
@@ -119,6 +127,10 @@ function routeConfig($routeProvider) {
         when('/deposit', {
             controller: 'DepositCtrl',
             templateUrl: 'views/deposit.html'
+        }).
+        when('/gooc', {
+            controller: 'GoocCtrl',
+            templateUrl: 'views/gooc.html'
         }).
         when('/monitor', {
             controller: 'MonitorCtrl',
@@ -221,6 +233,7 @@ app.controller('TransferCtrl2', ['$scope', '$http', function($scope, $http) {
             });
     };
 
+    // deprecated
     $scope.transferConfirm = function(item) {
         item.status = -1;
         $http.post('/payment/transfer/confirm/' + item.id, {})
@@ -349,6 +362,52 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
 }]);
 
+app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.txStatus = [
+        {text: 'BAD_FORM',  value: 'BAD_FORM'},
+        {text: 'PENDING',   value: 'PENDING'},
+        {text: 'PROCESSED', value: 'PROCESSED'},
+        {text: 'SUCCEEDED', value: 'SUCCEEDED'},
+        {text: 'FAILED',    value: 'FAILED'}];
+
+    $scope.goocQuery = {page: 1, limit: 20};
+
+    $scope.loadGoocTxs = function() {
+        $http.get('/gooctx/get', {params: $scope.query})
+            .success(function (data, status, headers, config) {
+                $scope.goocTxs = data.data;
+            });
+    };
+
+    $scope.loadGoocTxs();
+
+    $scope.reload = function() {
+        $scope.loadGoocTxs();
+    };
+
+    $scope.showButton = function(item) {
+        return (item.cps == 'BAD_FORM' && item.ty == 'DEPOSIT')
+    };
+
+    $scope.transferConfirm = function(item) {
+        item.status = -1;
+        $http.post('/transfer/confirm/' + item.id, {})
+            .success(function(data, status, headers, config) {
+                console.log('request:', $scope.notification, ' response:', data);
+                setTimeout($scope.loadTransfer, 1000);
+            });
+    };
+
+    $scope.transferReject = function(item) {
+        item.status = -1;
+        $http.post('/transfer/reject/' + item.id, {})
+            .success(function(data, status, headers, config) {
+                console.log('request:', $scope.notification, ' response:', data);
+                setTimeout($scope.loadTransfer, 1000);
+            });
+    };
+}]);
+
 app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
     var selectedCurrency = 'CNY';
     if (operator === 'yangli@coinport.com') {
@@ -385,7 +444,6 @@ app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
         });
     };
 }]);
-
 
 app.controller('MonitorCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.reload = function () {

@@ -51,8 +51,7 @@ def getFakeGoocDepositTxs(minTxid, maxTxid):
     txs = response['records']
     retTxs = []
     for tx in txs:
-        if (tx['transactionId'] > minTxid and tx['transactionId'] < maxTxid and
-            (tx['phoneB'] == '15026841984' or tx['phoneB'] == '50001')):
+        if (tx['transactionId'] > minTxid and tx['transactionId'] < maxTxid):
             retTxs.append(tx)
         if (len(retTxs) == batchNum):
             break;

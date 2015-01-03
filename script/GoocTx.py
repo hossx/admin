@@ -5,9 +5,13 @@
 
 __author__ = 'c@coinport.com (Ma Chao)'
 
+import re
+
+cpid = re.compile(r'^100\d{7}$')
+
 class GoocTx:
     def __init__(self, tx):
-        self._id = tx['transactionId']
+        self._id = long(tx['transactionId'])
         self.c = tx['comment']
         self.sa = tx['addressA']
         self.ra = tx['addressB']
@@ -16,4 +20,14 @@ class GoocTx:
         self.a = tx['coins']
         self.t = tx['confirmTime']
         self.tt = tx['transactionType']
-        self.cps = 'PENDING'
+        match = cpid.match(str(self.c))
+        if match:
+            self.cps = 'PENDING'
+        else:
+            self.cps = 'BAD_FORM'
+        if (self.rp == '15026841984' or self.rp == '50001'):
+            self.ty = 'DEPOSIT'
+        elif (self.sp == '15026841984' or self.sp == '50001'):
+            self.ty = 'WITHDRAWAL'
+        else:
+            self.ty = 'UNKNOWN'

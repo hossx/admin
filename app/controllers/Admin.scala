@@ -17,8 +17,20 @@ import com.coinport.coinex.api.service.BitwayService
 import com.coinport.coinex.data.CryptoCurrencyAddressType
 import scala.concurrent.Future
 import com.coinport.coinex.api.service.AccountService
+import com.typesafe.config.ConfigFactory
+import com.mongodb.casbah.{ MongoConnection, MongoURI, WriteConcern }
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.query.Imports._
 
 object Admin extends Controller with Json4s {
+  private val configPath = if (System.getProperty("gooc.config") != null) System.getProperty("gooc.config") else "gooc.conf"
+  private val config = ConfigFactory.load(configPath)
+
+  private val host = config.getString("akka.mongo.host")
+  private val port = config.getInt("akka.mongo.port")
+  private val mongoUri = MongoURI(s"mongodb://${host}:${port}/gooc")
+  private val txCollection = MongoConnection(mongoUri)(mongoUri.database.get)("dTxs")
+
   val loginForm = Form(
     tuple(
       "email" -> text,
@@ -83,6 +95,39 @@ object Admin extends Controller with Json4s {
       AccountService.deposit(uid, currency, amount) map {
         case result => Ok(result.toJson)
       }
+  }
+
+  private case class GoocTx(_id: Long, a: Double, c: String, cps: String, rp: String, ty: String, tt: String, sp: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
+
+  def getGoocTxs() = Action { implicit request =>
+      val query = request.queryString
+      val pager = ControllerHelper.parsePagingParam()
+      val status = getParam(query, "status")
+      val gid = getParam(query, "gid")
+      var q = MongoDBObject()
+      if (status.isDefined)
+        q += ("cps" -> status.get)
+      if (gid.isDefined)
+        q += ("_id" -> gid.get)
+      val txs = txCollection.find(q).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
+      Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, txs.size))).toJson)
+  }
+
+  private def toGoocTx(obj: DBObject) = {
+    GoocTx(
+      obj.get("_id").asInstanceOf[Long],
+      obj.get("a").asInstanceOf[Double],
+      obj.get("c").asInstanceOf[String],
+      obj.get("cps").asInstanceOf[String],
+      obj.get("rp").asInstanceOf[String],
+      obj.get("ty").asInstanceOf[String],
+      obj.get("tt").asInstanceOf[String],
+      obj.get("sp").asInstanceOf[String],
+      obj.get("ra").asInstanceOf[String],
+      obj.get("sa").asInstanceOf[String],
+      obj.get("t").asInstanceOf[Long],
+      obj.get("cptxid").asInstanceOf[Long],
+      obj.get("cpuid").asInstanceOf[Long])
   }
 
   def getTransfers() = Action.async {

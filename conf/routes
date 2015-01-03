@@ -15,6 +15,7 @@ POST    /notifications/set            controllers.Admin.setNotification()
 
 GET     /monitor/actors/get           controllers.Admin.getActiveActors()
 GET     /transfer/get                 controllers.Admin.getTransfers()
+GET     /gooctx/get                   controllers.Admin.getGoocTxs()
 POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
 POST    /transfer/deposit             controllers.Admin.requestDeposit()

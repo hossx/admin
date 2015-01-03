@@ -1,0 +1,69 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | Gooc</li>
+    </ul>
+</div>
+
+<div class="row">
+    <table class="table">
+        <tbody>
+        <tr>
+        <td>
+            <label>Gooc Status</label>
+            <select ng-options="t.value as t.text for t in txStatus" ng-model="goocQuery.status" class="form-control"></select>
+        </td>
+        <td>
+            <label>GoocID</label>
+            <input name='ID' ng-model="goocQuery.gid" class="form-control" >
+        </td>
+        <td>
+            <button class="buttons" ng-click="reload()"  class="form-control">Search</button>
+        </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="col-md-8">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>GoocId</th>
+                <th>Time</th>
+                <th>CpId</th>
+                <th>Comment</th>
+                <th>UserId</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>SenderPhone</th>
+                <th>ReceiverPhone</th>
+                <th>Status</th>
+
+                <th>Operation</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in goocTxs.items | orderBy: ['-_id']">
+                <td> {{item._id}} </td>
+                <td> {{item.t | date:"MM-dd HH:mm:ss"}} </td>
+                <td> {{item.cptxid}} </td>
+                <td> {{item.c}} </td>
+                <td>
+                    <a target="_blank" ng-show="item.cpuid != ''" href="https://exchange.coinport.com/user/{{item.cpuid}}">{{item.cpuid}}</a>
+                    <input ng-show="item.cpuid == ''" ng-model="settedUid"></input>
+                </td>
+                <td> {{item.ty}} </td>
+                <td> <b>{{item.ty | goocTransferSign}} {{item.a | quantity}}</b> </td>
+                <td> {{item.sp}} </td>
+                <td> {{item.rp}} </td>
+
+                <td> {{item.cps}} </td>
+                <td ng-show="showButton(item)">
+                    <button class="btn btn-success" ng-click="transferConfirm(item)">Confirm</button>
+                    &nbsp;
+                    <button class="btn btn-danger" ng-click="transferReject(item)">Reject</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <pagination boundary-links="true" max-size="10" items-per-page="goocQuery.limit" total-items="goocTxs.count" ng-model="goocQuery.page" class="pagination-sm" ng-change="loadGoocTxs()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+    </div>
+</div>
