@@ -22,7 +22,7 @@ dTxsC = db['dTxs']
 cursorC = db['cursor']
 
 def getGoocDepositTxs(minTxid, maxTxid):
-    requrl = 'http://localhost:9000/GooCoin/rest/tx/partner/history'
+    requrl = 'http://goocoin.com:8080/GooCoin/rest/tx/partner/history'
     reqdata = { 'minId':minTxid, 'maxId':maxTxid, 'pageSize':20, 'address':'1DuwDsv2W3v5XyXT7RAvwtFHtnSnWveHse'}
     headerdata = {'Content-Type':'application/json'}
 
