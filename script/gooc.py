@@ -60,8 +60,8 @@ def getFakeGoocDepositTxs(minTxid, maxTxid):
 def fetchNewGoocTx(currentMinTxid, lastTxId):
     minTxid = currentMinTxid
     meetLastTx = False
-    goocTxs = getFakeGoocDepositTxs(lastTxId, currentMinTxid)
-    # goocTxs = getGoocDepositTxs(lastTxId, currentMinTxid)
+    # goocTxs = getFakeGoocDepositTxs(lastTxId, currentMinTxid)
+    goocTxs = getGoocDepositTxs(lastTxId, currentMinTxid)
     if (goocTxs == None):
         return (None, False, minTxid)
     retTxs = []
