@@ -366,6 +366,7 @@ app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.txStatus = [
         {text: 'BAD_FORM',  value: 'BAD_FORM'},
         {text: 'PENDING',   value: 'PENDING'},
+        {text: 'PROCESSING', value: 'PROCESSING'},
         {text: 'PROCESSED', value: 'PROCESSED'},
         {text: 'SUCCEEDED', value: 'SUCCEEDED'},
         {text: 'FAILED',    value: 'FAILED'}];

@@ -164,6 +164,7 @@ object Admin extends Controller with Json4s {
           val amount = ControllerHelper.getParam(data, "a", "0.0").toDouble
           val currency: Currency = Currency.Gooc
 
+          txCollection.update(MongoDBObject("_id" -> goocId), $set("cps" -> "PROCESSING"), false, false, WriteConcern.Safe)
           AccountService.deposit(uid, currency, amount) map { case result =>
             if (result.success) {
               val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
