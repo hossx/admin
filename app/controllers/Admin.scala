@@ -109,8 +109,9 @@ object Admin extends Controller with Json4s {
         q += ("cps" -> status.get)
       if (gid.isDefined)
         q += ("_id" -> new java.lang.Long(gid.get.toLong))
+      val count = txCollection.count(q)
       val txs = txCollection.find(q).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
-      Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, txs.size))).toJson)
+      Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, count.toInt))).toJson)
   }
 
   private def toGoocTx(obj: DBObject) = {
