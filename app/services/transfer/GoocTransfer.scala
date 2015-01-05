@@ -17,6 +17,7 @@ import scala.concurrent.duration.DurationInt
 import scala.concurrent.Await
 
 import com.coinport.coinex.api.service.AccountService
+import com.coinport.coinex.api.service.TransferService
 import com.coinport.coinex.data.Implicits._
 import com.coinport.coinex.data._
 
@@ -55,6 +56,7 @@ class GoocTransfer(host: String, port: Int) extends Actor with ActorLogging {
         val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
         txCollection.update(MongoDBObject("_id" -> id),
           $set("cps" -> "PROCESSED", "cptxid" -> cptxid, "cpuid" -> uid), false, false, WriteConcern.Safe)
+        TransferService.AdminConfirmTransfer(cptxid, true)
       } else {
         txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
       }
