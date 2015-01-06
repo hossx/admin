@@ -44,7 +44,7 @@ class GoocTransfer(host: String, port: Int) extends Actor with ActorLogging {
   }
 
   private def processPendingRequest() {
-    for (tx <- txCollection.find(MongoDBObject("cps" -> "PENDING", "ty" -> "DEPOSIT"))) {
+    for (tx <- txCollection.find(MongoDBObject("cps" -> "PENDING", "ty" -> "DEPOSIT")).sort(MongoDBObject("_id" -> -1))) {
       val id = tx.get("_id").asInstanceOf[Long]
       val uid = tx.get("c").asInstanceOf[String].toLong
       val amount = tx.get("a").asInstanceOf[Double]
