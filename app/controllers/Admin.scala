@@ -110,7 +110,7 @@ object Admin extends Controller with Json4s {
       if (gid.isDefined)
         q += ("_id" -> new java.lang.Long(gid.get.toLong))
       val count = txCollection.count(q)
-      val txs = txCollection.find(q).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
+      val txs = txCollection.find(q).sort(MongoDBObject("_id" -> -1)).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
       Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, count.toInt))).toJson)
   }
 
