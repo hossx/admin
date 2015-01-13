@@ -415,7 +415,7 @@ app.controller('DepositCtrl', ['$scope', '$http', function($scope, $http) {
     var selectedCurrency = 'CNY';
     if (operator === 'yangli@coinport.com') {
         selectedCurrency = 'GOOC';
-    } else if (operator === 'xiaolu@coinport.com') {
+    } else if (operator === 'xiaolu@coinport.com' || operator === 'coinport@126.com') {
         selectedCurrency = 'CNY';
     } else {
         selectedCurrency = 'CNY';
