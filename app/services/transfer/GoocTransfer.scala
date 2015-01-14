@@ -45,20 +45,24 @@ class GoocTransfer(host: String, port: Int) extends Actor with ActorLogging {
 
   private def processPendingRequest() {
     for (tx <- txCollection.find(MongoDBObject("cps" -> "PENDING", "ty" -> "DEPOSIT"))) {
-      val id = tx.get("_id").asInstanceOf[Long]
-      val uid = tx.get("c").asInstanceOf[String].toLong
-      val amount = tx.get("a").asInstanceOf[Double]
-      val currency: Currency = Currency.Gooc
-      println(s"processing ${id} deposit item")
-      txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "PROCESSING"), false, false, WriteConcern.Safe)
-      val result = Await.result(AccountService.deposit(uid, currency, amount), 5 seconds)
-      if (result.success) {
-        val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
-        txCollection.update(MongoDBObject("_id" -> id),
-          $set("cps" -> "PROCESSED", "cptxid" -> cptxid, "cpuid" -> uid), false, false, WriteConcern.Safe)
-        TransferService.AdminConfirmTransfer(cptxid, true)
-      } else {
-        txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+      try {
+        val id = tx.get("_id").asInstanceOf[Long]
+        val uid = tx.get("c").asInstanceOf[String].replaceAll("""\s+""", "").replaceAll("\"", "").toLong
+        val amount = tx.get("a").asInstanceOf[Double]
+        val currency: Currency = Currency.Gooc
+        println(s"processing ${id} deposit item")
+        txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "PROCESSING"), false, false, WriteConcern.Safe)
+        val result = Await.result(AccountService.deposit(uid, currency, amount), 5 seconds)
+        if (result.success) {
+          val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
+          txCollection.update(MongoDBObject("_id" -> id),
+            $set("cps" -> "PROCESSED", "cptxid" -> cptxid, "cpuid" -> uid), false, false, WriteConcern.Safe)
+          TransferService.AdminConfirmTransfer(cptxid, true)
+        } else {
+          txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+        }
+      } catch {
+        case e: Throwable => println(e)
       }
       Thread.sleep(1000)
     }
