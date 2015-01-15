@@ -358,6 +358,20 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
         $scope.loadWallets();
     };
 
+    $scope.realWithdrawalAmount = function(item) {
+        var v = item.amount.value;
+        var c = item.amount.currency;
+        if (c == 'CNY') {
+            if (v <= 500)
+                return (v - 2).toFixed(8);
+            else {
+                return (v * (1-0.004)).toFixed(8)
+            }
+        } else {
+            return -1;
+        }
+    }
+
     $scope.loadTransfer();
 
 }]);

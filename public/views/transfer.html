@@ -57,7 +57,7 @@
                 <td> <a target="_blank" href="https://exchange.coinport.com/user/{{item.uid}}">{{item.uid}}</a></td>
                 <td> <span class="badge badge-{{item.operation|transferOperationClass}}">{{item.operation | tType}}</span> </td>
                 <td> {{item.amount.currency}} </td>
-                <td> <b>{{item.operation | transferSign}} {{item.amount.value | quantity}}</b> </td>
+                <td> <b>{{item.operation | transferSign}} {{item.amount.value | quantity}} <span ng-show="(item.operation == 1) && (item.amount.currency=='CNY')">({{realWithdrawalAmount(item)}})</span></b> </td>
                 <td>{{item.address}}</td>
                 <td> <span class="label label-{{item.status|transferStatusClass}}">{{item.status | tStatus}}</span> </td>
                 <td>
