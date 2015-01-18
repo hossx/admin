@@ -327,6 +327,8 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.loadWallets = function() {
+        if ($scope.currency === 'CNY' || $scope.currency === 'GOOC')
+            return;
         $scope.addressUrl = COINPORT.addressUrl[$scope.currency];
         $http.get('/api/open/wallet/' + $scope.currency + '/hot')
             .success(function(data, status, headers, config) {
