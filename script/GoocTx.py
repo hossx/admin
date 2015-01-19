@@ -12,7 +12,7 @@ cpid = re.compile(r'^100\d{7}$')
 class GoocTx:
     def __init__(self, tx):
         self._id = long(tx['transactionId'])
-        self.c = tx['comment']
+        self.c = str(tx['comment']).strip()
         self.sa = tx['addressA']
         self.ra = tx['addressB']
         self.sp = tx['phoneA']
@@ -23,7 +23,7 @@ class GoocTx:
         if self.a < 1000:
             self.cps = 'UNDER_LIMIT'
         else:
-            match = cpid.match(str(self.c))
+            match = cpid.match(self.c)
             if match:
                 self.cps = 'PENDING'
             else:
