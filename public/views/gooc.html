@@ -13,6 +13,14 @@
             <select ng-options="t.value as t.text for t in txStatus" ng-model="goocQuery.status" class="form-control"></select>
         </td>
         <td>
+            <label>Cp Type</label>
+            <select ng-options="t.value as t.text for t in transferTypes" ng-model="goocQuery.type" class="form-control"></select>
+        </td>
+        <td>
+            <label>UID</label>
+            <input name='UID' ng-model="goocQuery.uid" class="form-control" >
+        </td>
+        <td>
             <label>GoocID</label>
             <input name='ID' ng-model="goocQuery.gid" class="form-control" >
         </td>

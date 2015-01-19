@@ -381,11 +381,16 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
     $scope.txStatus = [
         {text: 'BAD_FORM',  value: 'BAD_FORM'},
+        {text: 'UNDER_LIMIT',  value: 'UNDER_LIMIT'},
         {text: 'PENDING',   value: 'PENDING'},
         {text: 'PROCESSING', value: 'PROCESSING'},
         {text: 'PROCESSED', value: 'PROCESSED'},
         {text: 'SUCCEEDED', value: 'SUCCEEDED'},
         {text: 'FAILED',    value: 'FAILED'}];
+
+    $scope.transferTypes = [
+        {text: 'DEPOSIT', value: 'DEPOSIT'},
+        {text: 'WITHDRAWAL', value: 'WITHDRAWAL'}];
 
     $scope.goocQuery = {page: 1, limit: 20};
 
