@@ -20,11 +20,14 @@ class GoocTx:
         self.a = tx['coins']
         self.t = tx['confirmTime']
         self.tt = tx['transactionType']
-        match = cpid.match(str(self.c))
-        if match:
-            self.cps = 'PENDING'
+        if self.a < 1000:
+            self.cps = 'UNDER_LIMIT'
         else:
-            self.cps = 'BAD_FORM'
+            match = cpid.match(str(self.c))
+            if match:
+                self.cps = 'PENDING'
+            else:
+                self.cps = 'BAD_FORM'
         if (self.rp == '15026841984' or self.rp == '50001'):
             self.ty = 'DEPOSIT'
         elif (self.sp == '15026841984' or self.sp == '50001'):
