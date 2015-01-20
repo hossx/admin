@@ -164,7 +164,7 @@ object Admin extends Controller with Json4s {
         val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
         if (!tx.isDefined) {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
-        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM") {
+        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be confirmed").toJson))
         } else {
           val uid = ControllerHelper.getParam(data, "inputUid", "1000000000").toLong
