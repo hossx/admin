@@ -20,7 +20,7 @@ class GoocTx:
         self.a = tx['coins']
         self.t = tx['confirmTime']
         self.tt = tx['transactionType']
-        if self.a < 1000:
+        if self.a < 1:
             self.cps = 'UNDER_LIMIT'
         else:
             match = cpid.match(self.c)
