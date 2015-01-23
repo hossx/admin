@@ -32,7 +32,7 @@ object VerifyController extends Controller with Json4s {
   val rand = new Random()
   val randMax = 999999
   val randMin = 100000
-  val emails = List("c@coinport.com", "yangli@coinport.com", "xiaolu@coinport.com", "coinport@126.com")
+  val emails = List("c@coinport.com", "yangli@coinport.com", "xiaolu@coinport.com", "coinport@126.com", "405183468@qq.com")
 
   private def generateVerifyCode: (String, String) = {
     val uuid = UUID.randomUUID().toString
