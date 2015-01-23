@@ -12,7 +12,12 @@ cpid = re.compile(r'^100\d{7}$')
 class GoocTx:
     def __init__(self, tx):
         self._id = long(tx['transactionId'])
-        self.c = str(tx['comment']).strip()
+        try:
+            self.c = str(tx['comment']).strip()
+        except:
+            print "comment format error"
+            self.c = "error"
+            self.oc = tx['comment']
         self.sa = tx['addressA']
         self.ra = tx['addressB']
         self.sp = tx['phoneA']
