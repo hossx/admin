@@ -33,6 +33,8 @@ def getGoocDepositTxs(minTxid, maxTxid):
     except:
         return None
     resStr = res.read()
+    print resStr;
+    sys.stdout.flush()
     if (resStr == None):
         return None
     response = json.loads(resStr)
@@ -84,6 +86,7 @@ def saveNewGoocTx(txs):
             dTxsC.insert(tx.__dict__)
         except:
             print 'try to insert exists item: ', tx.__dict__;
+            sys.stdout.flush()
 
 def getMaxTxid(txs):
     if (txs == None):
@@ -106,7 +109,7 @@ def fetchNewTxsSinceLastFetch():
     retryTimes = 0
     (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(MAXINT, lastTxId - 1)
     saveNewGoocTx(newGoocTxs)
-    if (newGoocTxs == None):
+    if (newGoocTxs == None or len(newGoocTxs) == 0):
         retryTimes += 1
     maxId = max(maxId, getMaxTxid(newGoocTxs))
     while (not meetLastTx):
@@ -115,6 +118,8 @@ def fetchNewTxsSinceLastFetch():
         if (newGoocTxs == None):
             retryTimes += 1
             if (retryTimes == MAXRETRY):
+                print 'can not get txs between %d - %d'%(currentMinTxid, lastTxId);
+                sys.stdout.flush()
                 break;
         else:
             retryTimes = 0
@@ -123,9 +128,11 @@ def fetchNewTxsSinceLastFetch():
 
 def main():
     while True:
-        print 'fetching latest deposit txs...'
+        print 'fetching latest deposit txs...';
+        sys.stdout.flush()
         fetchNewTxsSinceLastFetch()
-        print 'finished'
+        print 'finished';
+        sys.stdout.flush()
         time.sleep(10)
 
 if __name__ == '__main__':
