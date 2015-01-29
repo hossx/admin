@@ -115,7 +115,7 @@ def fetchNewTxsSinceLastFetch():
     while (not meetLastTx):
         (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(currentMinTxid, lastTxId - 1)
         saveNewGoocTx(newGoocTxs)
-        if (newGoocTxs == None):
+        if (newGoocTxs == None or len(newGoocTxs) == 0):
             retryTimes += 1
             if (retryTimes == MAXRETRY):
                 print 'can not get txs between %d - %d'%(currentMinTxid, lastTxId);
