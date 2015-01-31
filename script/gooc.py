@@ -29,6 +29,7 @@ def getGoocDepositTxs(minTxid, maxTxid):
     headerdata = {'Content-Type':'application/json'}
 
     req = urllib2.Request(url = requrl, headers=headerdata, data =json.dumps(reqdata))
+    res = None
     try:
         res = urllib2.urlopen(req, timeout = 10)
         resStr = res.read()
@@ -42,7 +43,10 @@ def getGoocDepositTxs(minTxid, maxTxid):
             return None
         return response['records']
     except:
-        res.close()
+        print "netwook error";
+        sys.stdout.flush()
+        if (not res == None):
+            res.close()
         return None
 
 def getFakeGoocDepositTxs(minTxid, maxTxid):
@@ -112,13 +116,13 @@ def fetchNewTxsSinceLastFetch():
     retryTimes = 0
     (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(MAXINT, lastTxId - 1)
     saveNewGoocTx(newGoocTxs)
-    if (newGoocTxs == None or len(newGoocTxs) == 0):
+    if (newGoocTxs == None or (len(newGoocTxs) == 0 and not meetLastTx)):
         retryTimes += 1
     maxId = max(maxId, getMaxTxid(newGoocTxs))
     while (not meetLastTx):
         (newGoocTxs, meetLastTx, currentMinTxid) = fetchNewGoocTx(currentMinTxid, lastTxId - 1)
         saveNewGoocTx(newGoocTxs)
-        if (newGoocTxs == None or len(newGoocTxs) == 0):
+        if (newGoocTxs == None or (len(newGoocTxs) == 0 and not meetLastTx)):
             retryTimes += 1
             if (retryTimes == MAXRETRY):
                 print 'can not get txs between %d - %d'%(currentMinTxid, lastTxId);
