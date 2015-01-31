@@ -22,6 +22,8 @@ dTxsC = db['dTxs']
 cursorC = db['cursor']
 
 def getGoocDepositTxs(minTxid, maxTxid):
+    time.sleep(2)
+
     requrl = 'http://goocoin.com:8080/GooCoin/rest/tx/partner/history'
     reqdata = { 'minId':minTxid, 'maxId':maxTxid, 'pageSize':20, 'address':'1DuwDsv2W3v5XyXT7RAvwtFHtnSnWveHse'}
     headerdata = {'Content-Type':'application/json'}
@@ -29,18 +31,19 @@ def getGoocDepositTxs(minTxid, maxTxid):
     req = urllib2.Request(url = requrl, headers=headerdata, data =json.dumps(reqdata))
     try:
         res = urllib2.urlopen(req, timeout = 10)
-        time.sleep(2)
+        resStr = res.read()
+        res.close()
+        print resStr;
+        sys.stdout.flush()
+        if (resStr == None):
+            return None
+        response = json.loads(resStr)
+        if (response == None or response['status'] != 'OK'):
+            return None
+        return response['records']
     except:
+        res.close()
         return None
-    resStr = res.read()
-    print resStr;
-    sys.stdout.flush()
-    if (resStr == None):
-        return None
-    response = json.loads(resStr)
-    if (response == None or response['status'] != 'OK'):
-        return None
-    return response['records']
 
 def getFakeGoocDepositTxs(minTxid, maxTxid):
     batchNum = 4
