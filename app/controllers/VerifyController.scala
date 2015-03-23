@@ -108,7 +108,7 @@ object VerifyController extends Controller with Json4s {
       val userEmail = getParam(data, "email").getOrElse("")
       if (emails.contains(userEmail)) {
         val (uuid, verifyCode) = generateVerifyCode
-        UserService.sendVerificationCodeEmail(userEmail, verifyCode.toString) map {
+        UserService.sendVerificationCodeEmail(userEmail, verifyCode.toString, None, None) map {
           rv => Ok(ApiResult(true, 0, "", Some(uuid)).toJson)
         }
       } else {
