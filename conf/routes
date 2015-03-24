@@ -21,6 +21,8 @@ POST    /gooctx/reject/*gid           controllers.Admin.rejectGoocTx(gid)
 POST    /transfer/confirm/*id         controllers.Admin.confirmTransfer(id)
 POST    /transfer/reject/*id          controllers.Admin.rejectTransfer(id)
 POST    /transfer/deposit             controllers.Admin.requestDeposit()
+POST    /edm/send                     controllers.Admin.sendEdm()
+POST    /edm/get                      controllers.Admin.getEdm()
 
 #GET     /payment/transfer/get               controllers.Payment.getPaymentWithdrawal()
 #POST    /payment/transfer/succeed/*id       controllers.Payment.paymentWithdrawalSucceed(id)

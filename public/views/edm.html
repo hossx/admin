@@ -1,0 +1,109 @@
+<div id="breadcrumbs">
+    <ul class="breadcrumb">
+        <li class="active"><i class="fa fa-home"></i> Admin | Edm</li>
+    </ul>
+</div>
+
+<div>
+  <div class="box">
+    <div class="box-title">
+        <h3><i class="fa fa-bars"></i>Edm</h3>
+        <div class="box-tool">
+            <a data-action="collapse" href="#"><i class="fa fa-chevron-up"></i></a>
+            <a data-action="close" href="#"><i class="fa fa-times"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 col-lg-2 control-label">Edm title</label>
+                <div class="col-sm-9 col-lg-10 controls">
+                    <input type="text" placeholder="Title" class="form-control" ng-model="payload.title" ng-disabled="payload.isResend">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 col-lg-2 control-label">Template name</label>
+                <div class="col-sm-9 col-lg-10 controls">
+                    <input type="text" placeholder="Template name" class="form-control" ng-model="payload.tplName" ng-disabled="payload.isResend">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 col-lg-2 control-label">Emails/Ids</label>
+                <div class="col-sm-9 col-lg-10 controls">
+                  <textarea class="form-control" tabindex="1" ng-model="payload.emails"></textarea>
+                  <div ng-bind="emailNum(payload.emails)"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-3 col-lg-2 control-label">
+                  <input type="checkbox" ng-model="payload.isResend"> Resend </input>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2">
+                    <button type="button" class="btn btn-primary" ng-click="sendEdm()"><i class="fa fa-check"></i>Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+    <table class="table">
+        <tbody>
+        <tr>
+        <td>
+            <label>Edm ID</label>
+            <input ng-model="edmQuery.id" class="form-control"></input>
+        </td>
+        <td>
+            <label>Edm title</label>
+            <input ng-model="edmQuery.title" class="form-control"></input>
+        </td>
+        <td>
+            <label>Template name</label>
+            <input ng-model="edmQuery.tplName" class="form-control"></input>
+        </td>
+        <td>
+            <label>Email</label>
+            <input ng-model="edmQuery.email" class="form-control" >
+        </td>
+        <td>
+            <label>Status</label>
+            <select ng-options="t.value as t.text for t in edmStatus" ng-model="edmQuery.edmStatus" class="form-control"></select>
+        </td>
+        <td>
+            <button type="button" class="btn btn-primary" ng-click="getEdm()"><i class="fa fa-check"></i>Search</button>
+        </td>
+    </table>
+
+    <div class="col-md-11">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Time</th>
+                <th>Title</th>
+                <th>Template name</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="item in edmItems.items">
+                <td> {{item._id}} </td>
+                <td> {{item.e}} </td>
+                <td> {{item.ts | date:"MM-dd HH:mm:ss"}} </td>
+                <td> {{item.t}} </td>
+                <td> {{item.tn}} </td>
+                <td> {{item.s}} </td>
+            </tr>
+            </tbody>
+        </table>
+        <pagination boundary-links="true" max-size="10" items-per-page="edmQuery.limit" total-items="edmItems.count" ng-model="edmQuery.page" class="pagination-sm" ng-change="loadGoocTxs()" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></pagination>
+    </div>
+</div>

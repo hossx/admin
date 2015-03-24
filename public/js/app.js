@@ -144,6 +144,10 @@ function routeConfig($routeProvider) {
             controller: 'PaymentCtrl',
             templateUrl: 'views/payment.html'
         }).
+        when('/edm', {
+            controller: 'EdmCtrl',
+            templateUrl: 'views/edm.html'
+        }).
         otherwise({
             redirectTo: '/'
         });
@@ -376,6 +380,54 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
 
     $scope.loadTransfer();
 
+}]);
+
+app.controller('EdmCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.edmQuery = {title: '', tplName: '', email: '', edmStatus: ''};
+
+    $scope.edmStatus = [
+        {text: 'ALL',  value: 'ALL'},
+        {text: 'PENDING',  value: 'PENDING'},
+        {text: 'PROCESSING',  value: 'PROCESSING'},
+        {text: 'SENT',  value: 'SENT'},
+        {text: 'FAIL',  value: 'FAIL'}
+    ];
+
+    $scope.edmItems = {};
+
+    $scope.payload = {isResend: false};
+
+    $scope.emailNum = function(str) {
+        if (!str) {
+            return 0;
+        }
+        var emails = str.split(';');
+        var n = 0;
+        for (var i = 0; i < emails.length; ++i) {
+            if (emails[i])
+                ++n;
+        }
+        return n;
+    };
+
+    $scope.sendEdm = function() {
+        if ((!$scope.payload.isResend && (!$scope.payload.title || !$scope.payload.tplName || !$scope.payload.emails)) ||
+            ($scope.payload.isResend && !$scope.payload.emails)) {
+            alert('Bad parameters');
+            return;
+        }
+        $http.post('/edm/send', $.param($scope.payload))
+            .success(function(data, status, headers, config) {
+                alert('submitted');
+            });
+    };
+
+    $scope.getEdm = function() {
+        $http.post('/edm/get', $.param($scope.edmQuery))
+            .success(function(data, status, headers, config) {
+                $scope.edmItems = data.data;
+            });
+    };
 }]);
 
 app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {

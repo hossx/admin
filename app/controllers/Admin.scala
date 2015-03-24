@@ -21,6 +21,7 @@ import com.typesafe.config.ConfigFactory
 import com.mongodb.casbah.{ MongoConnection, MongoURI, WriteConcern }
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.query.Imports._
+import org.bson.types.ObjectId
 
 object Admin extends Controller with Json4s {
   private val configPath = if (System.getProperty("gooc.config") != null) System.getProperty("gooc.config") else "gooc.conf"
@@ -30,6 +31,8 @@ object Admin extends Controller with Json4s {
   private val port = config.getInt("akka.mongo.port")
   private val mongoUri = MongoURI(s"mongodb://${host}:${port}/gooc")
   private val txCollection = MongoConnection(mongoUri)(mongoUri.database.get)("dTxs")
+  private val edmUri = MongoURI(s"mongodb://${host}:${port}/edm")
+  private val edmCollection = MongoConnection(edmUri)(edmUri.database.get)("edms")
 
   val loginForm = Form(
     tuple(
@@ -98,6 +101,7 @@ object Admin extends Controller with Json4s {
   }
 
   private case class GoocTx(_id: Long, a: Double, c: String, cps: String, rp: String, ty: String, tt: String, sp: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
+  private case class EdmItem(_id: String, t: String, tn: String, e: String, s: String, ts: Long)
 
   def getGoocTxs() = Action { implicit request =>
       val query = request.queryString
@@ -135,6 +139,16 @@ object Admin extends Controller with Json4s {
       obj.get("t").asInstanceOf[Long],
       obj.get("cptxid").asInstanceOf[Long],
       obj.get("cpuid").asInstanceOf[Long])
+  }
+
+  private def toEdmItem(obj: DBObject) = {
+    EdmItem(
+      obj.get("_id").asInstanceOf[ObjectId].toString(),
+      obj.get("t").asInstanceOf[String],
+      obj.get("tn").asInstanceOf[String],
+      obj.get("e").asInstanceOf[String],
+      obj.get("s").asInstanceOf[String],
+      obj.get("ts").asInstanceOf[Long])
   }
 
   def getTransfers() = Action.async {
@@ -250,6 +264,53 @@ object Admin extends Controller with Json4s {
     implicit request =>
       BitwayService.getWallets(currency, CryptoCurrencyAddressType.valueOf(walletsType).get).map(result =>
         Ok(result.toJson))
+  }
+
+  def sendEdm() = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+      val data = request.body
+      val title = getParam(data, "title")
+      val tplName = getParam(data, "tplName")
+      val emails = getParam(data, "emails")
+      val isResend = getParam(data, "isResend").getOrElse("false") == "true"
+      if ((!isResend && (!title.isDefined || !tplName.isDefined || !emails.isDefined)) ||
+        (isResend && !emails.isDefined)) {
+        Future(BadRequest)
+      } else {
+        if (isResend) {
+          for (id <- emails.get.split(";")) {
+            edmCollection.update(MongoDBObject("_id" -> new ObjectId(id)), $set("s" -> "PENDING"), false, false, WriteConcern.Safe)
+          }
+        } else {
+          for (email <- emails.get.split(";")) {
+            edmCollection.insert(MongoDBObject("t" -> title.get, "tn" -> tplName.get, "e" -> email, "s" -> "PENDING", "ts" -> System.currentTimeMillis))
+          }
+        }
+        Future(Ok("ok"))
+      }
+  }
+
+  def getEdm() = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+      val query = request.body
+      val pager = ControllerHelper.parsePagingParam()
+      val id = getParam(query, "id").getOrElse("")
+      val title = getParam(query, "title").getOrElse("")
+      val tplName = getParam(query, "tplName").getOrElse("")
+      val email = getParam(query, "email").getOrElse("")
+      val status = getParam(query, "status").getOrElse("")
+      var q = MongoDBObject()
+      if (id != "")
+        q += ("_id" -> new ObjectId(id))
+      if (title != "")
+        q += ("t" -> title)
+      if (tplName != "")
+        q += ("tn" -> tplName)
+      if (email != "")
+        q += ("e" -> email)
+      if (status != "")
+        q += ("s" -> status)
+      val count = edmCollection.count(q)
+      val items = edmCollection.find(q).sort(MongoDBObject("_id" -> -1)).skip(pager.skip).limit(pager.limit).map(toEdmItem(_)).toSeq
+      Future(Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, items, count.toInt))).toJson))
   }
 
   private def getParam(queryString: Map[String, Seq[String]], param: String): Option[String] = {
