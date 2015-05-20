@@ -80,13 +80,12 @@ CryptoProxy.prototype.insertTx_ = function(tx) {
         if (!error) {
             collection.insert(tx, {safe:true}, function(err, result) {
                 if (err) {
-                    console.log(err);
+                    console.log("insert error: ", err);
                 } else {
-                    console.log(result);
                 }
             }); 
         } else {
-            console.log("inserDb error: ", error);
+            console.log("inserTx_ error: ", error);
         }
     });
 }
@@ -161,7 +160,6 @@ CryptoProxy.prototype.checkBlock_ = function() {
                 var tx = {_id: block.txs[i].txid, blockNum: blockHeight, inputAddr: block.txs[i].inputAddr, 
                           outputAddr: block.txs[i].outputAddr, a: block.txs[i].amount,
                           c: block.txs[i].memo, ty: ty, cps: cps};
-                //console.log("#############tx: %j", tx);
                 self.insertTx_(tx);
             }
             self.checkBlockAfterDelay_(0);
@@ -241,7 +239,7 @@ CryptoProxy.prototype.getCCTxByTxHash_ = function(tx, callback) {
     self.rpcRequest_(requestBody, function(error, result) {
         if(!error) {
             var value = web3.toDecimal(result.result.value);
-            value = web3.fromWei(value, "ether");
+            value = Number(web3.fromWei(value, "ether"));
             var memo = result.result.input;
             if (memo && 12 == memo.length) {
                 memo = memo.substr(2); 
