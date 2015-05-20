@@ -157,9 +157,10 @@ CryptoProxy.prototype.checkBlock_ = function() {
                 } else {
                     cps = "UNDER_LIMIT";
                 }
+                var time = new Date().getTime();
                 var tx = {_id: block.txs[i].txid, blockNum: blockHeight, inputAddr: block.txs[i].inputAddr, 
                           outputAddr: block.txs[i].outputAddr, a: block.txs[i].amount,
-                          c: block.txs[i].memo, ty: ty, cps: cps};
+                          c: block.txs[i].memo, ty: ty, cps: cps, t: time};
                 self.insertTx_(tx);
             }
             self.checkBlockAfterDelay_(0);
