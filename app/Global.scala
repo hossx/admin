@@ -10,6 +10,7 @@ import com.typesafe.config.ConfigFactory
 import play.api._
 import play.api.Play.current
 import services.transfer.GoocTransfer
+import services.transfer.EthTransfer
 import services.edm.EdmChecker
 
 object Global extends GlobalSettings {
@@ -26,6 +27,8 @@ object Global extends GlobalSettings {
     system = ActorSystem("quant", config)
     system.actorOf(Props(new GoocTransfer(config.getString("akka.mongo.host"), config.getInt("akka.mongo.port"))),
       "gooc_transfer")
+    system.actorOf(Props(new EthTransfer(config.getString("akka.mongo.host"), config.getInt("akka.mongo.port"))),
+      "eth_transfer")
     system.actorOf(Props(new EdmChecker(config.getString("akka.mongo.host"), config.getInt("akka.mongo.port"))),
       "edm_checker")
   }
