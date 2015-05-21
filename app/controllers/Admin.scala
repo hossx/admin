@@ -149,13 +149,9 @@ object Admin extends Controller with Json4s {
   }
 
   private def toEthTx(obj: DBObject) = {
-    val amount: Double = obj.get("a") match {
-      case a: Integer => a.toDouble
-      case a: Object => a.asInstanceOf[Double]
-    }
     EthTx(
       obj.get("_id").asInstanceOf[String],
-      amount,
+      obj.get("a").asInstanceOf[Double],
       obj.get("c").asInstanceOf[String],
       obj.get("cps").asInstanceOf[String],
       obj.get("ty").asInstanceOf[String],

@@ -48,7 +48,7 @@ class EthTransfer(host: String, port: Int) extends Actor with ActorLogging {
       try {
         val id = tx.get("_id").asInstanceOf[String]
         val uid = tx.get("c").asInstanceOf[String].replaceAll("""\s+""", "").replaceAll("\"", "").toLong
-        val amount = tx.get("a").asInstanceOf[Integer].toDouble
+        val amount = tx.get("a").asInstanceOf[Double]
         val currency: Currency = Currency.Eth
         println(s"processing ${id} deposit item")
         txCollection.update(MongoDBObject("_id" -> id), $set("cps" -> "PROCESSING"), false, false, WriteConcern.Safe)
