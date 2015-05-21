@@ -50,7 +50,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="item in ethTxs.items | orderBy: ['-_id']">
+            <tr ng-repeat="item in ethTxs.items | orderBy: ['-t']">
                 <td> {{item._id}} </td>
                 <td> {{item.b}} </td>
                 <td> {{item.t | date:"MM-dd HH:mm:ss"}} </td>
