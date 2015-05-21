@@ -158,9 +158,11 @@ CryptoProxy.prototype.checkBlock_ = function() {
                     cps = "UNDER_LIMIT";
                 }
                 var time = new Date().getTime();
+                var high = parseInt(time / 0xffffffff);
+                var timeLong = mongodb.Long(time & 0xffffffff, high);
                 var tx = {_id: block.txs[i].txid, blockNum: blockHeight, inputAddr: block.txs[i].inputAddr, 
                           outputAddr: block.txs[i].outputAddr, a: block.txs[i].amount,
-                          c: block.txs[i].memo, ty: ty, cps: cps, t: time};
+                          c: block.txs[i].memo, ty: ty, cps: cps, t: timeLong};
                 self.insertTx_(tx);
             }
             self.checkBlockAfterDelay_(0);
@@ -241,6 +243,7 @@ CryptoProxy.prototype.getCCTxByTxHash_ = function(tx, callback) {
         if(!error) {
             var value = web3.toDecimal(result.result.value);
             value = Number(web3.fromWei(value, "ether"));
+            value = parseFloat(value.toString());
             var memo = result.result.input;
             if (memo && 12 == memo.length) {
                 memo = memo.substr(2); 
