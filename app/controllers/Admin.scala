@@ -103,7 +103,7 @@ object Admin extends Controller with Json4s {
   }
 
   private case class GoocTx(_id: Long, a: Double, c: String, cps: String, rp: String, ty: String, tt: String, sp: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
-  private case class EthTx(_id: String, a: Double, c: String, cps: String, ty: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
+  private case class EthTx(_id: String, a: Double, c: String, cps: String, ty: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long, b: Long)
   private case class EdmItem(_id: String, t: String, tn: String, e: String, s: String, ts: Long)
 
   def getGoocTxs() = Action { implicit request =>
@@ -159,7 +159,8 @@ object Admin extends Controller with Json4s {
       obj.get("inputAddr").asInstanceOf[String],
       obj.get("t").asInstanceOf[Long],
       obj.get("cptxid").asInstanceOf[Long],
-      obj.get("cpuid").asInstanceOf[Long])
+      obj.get("cpuid").asInstanceOf[Long],
+      obj.get("blockNum").asInstanceOf[Long])
   }
 
   private def toGoocTx(obj: DBObject) = {

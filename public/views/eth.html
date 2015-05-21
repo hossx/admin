@@ -35,6 +35,7 @@
             <thead>
             <tr>
                 <th>EthId</th>
+                <th>BlockId</th>
                 <th>Time</th>
                 <th>CpId</th>
                 <th>Comment</th>
@@ -51,6 +52,7 @@
             <tbody>
             <tr ng-repeat="item in ethTxs.items | orderBy: ['-_id']">
                 <td> {{item._id}} </td>
+                <td> {{item.b}} </td>
                 <td> {{item.t | date:"MM-dd HH:mm:ss"}} </td>
                 <td> {{item.cptxid}} </td>
                 <td> {{item.c}} </td>
