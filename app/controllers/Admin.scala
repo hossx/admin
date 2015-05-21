@@ -30,7 +30,9 @@ object Admin extends Controller with Json4s {
   private val host = config.getString("akka.mongo.host")
   private val port = config.getInt("akka.mongo.port")
   private val mongoUri = MongoURI(s"mongodb://${host}:${port}/gooc")
+  private val ethMongoUri = MongoURI(s"mongodb://${host}:${port}/eth")
   private val txCollection = MongoConnection(mongoUri)(mongoUri.database.get)("dTxs")
+  private val ethTxCollection = MongoConnection(ethMongoUri)(ethMongoUri.database.get)("txs")
   private val edmUri = MongoURI(s"mongodb://${host}:${port}/edm")
   private val edmCollection = MongoConnection(edmUri)(edmUri.database.get)("edms")
 
@@ -101,6 +103,7 @@ object Admin extends Controller with Json4s {
   }
 
   private case class GoocTx(_id: Long, a: Double, c: String, cps: String, rp: String, ty: String, tt: String, sp: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
+  private case class EthTx(_id: String, a: Double, c: String, cps: String, ty: String, ra: String, sa: String, t: Long, cptxid: Long, cpuid: Long)
   private case class EdmItem(_id: String, t: String, tn: String, e: String, s: String, ts: Long)
 
   def getGoocTxs() = Action { implicit request =>
@@ -122,6 +125,45 @@ object Admin extends Controller with Json4s {
       val count = txCollection.count(q)
       val txs = txCollection.find(q).sort(MongoDBObject("_id" -> -1)).skip(pager.skip).limit(pager.limit).map(toGoocTx(_)).toSeq
       Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, count.toInt))).toJson)
+  }
+
+  def getEthTxs() = Action { implicit request =>
+      val query = request.queryString
+      val pager = ControllerHelper.parsePagingParam()
+      val status = getParam(query, "status")
+      val gid = getParam(query, "gid")
+      val uid = getParam(query, "uid")
+      val t = getParam(query, "type")
+      var q = MongoDBObject()
+      if (status.isDefined)
+        q += ("cps" -> status.get)
+      if (gid.isDefined)
+        q += ("_id" -> gid.get)
+      if (uid.isDefined)
+        q += ("c" -> uid.get)
+      if (t.isDefined)
+        q += ("ty" -> t.get)
+      val count = ethTxCollection.count(q)
+      val txs = ethTxCollection.find(q).sort(MongoDBObject("t" -> -1)).skip(pager.skip).limit(pager.limit).map(toEthTx(_)).toSeq
+      Ok(ApiResult(data = Some(ApiPagingWrapper(pager.skip, pager.limit, txs, count.toInt))).toJson)
+  }
+
+  private def toEthTx(obj: DBObject) = {
+    val amount: Double = obj.get("a") match {
+      case a: Integer => a.toDouble
+      case a: Object => a.asInstanceOf[Double]
+    }
+    EthTx(
+      obj.get("_id").asInstanceOf[String],
+      amount,
+      obj.get("c").asInstanceOf[String],
+      obj.get("cps").asInstanceOf[String],
+      obj.get("ty").asInstanceOf[String],
+      obj.get("outputAddr").asInstanceOf[String],
+      obj.get("inputAddr").asInstanceOf[String],
+      obj.get("t").asInstanceOf[Long],
+      obj.get("cptxid").asInstanceOf[Long],
+      obj.get("cpuid").asInstanceOf[Long])
   }
 
   private def toGoocTx(obj: DBObject) = {
@@ -198,6 +240,50 @@ object Admin extends Controller with Json4s {
           }
         }
       }
+  }
+
+  def confirmEthTx() = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+      val data = request.body
+      val ethId = ControllerHelper.getParam(data, "_id", "0")
+      if (ethId == "0") {
+        Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "eth id can't be null").toJson))
+      } else {
+        val tx = ethTxCollection.findOne(MongoDBObject("_id" -> ethId))
+        if (!tx.isDefined) {
+          Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find eth tx: " + ethId).toJson))
+        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
+          Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"eth tx ${ethId} can't be confirmed").toJson))
+        } else {
+          val uid = ControllerHelper.getParam(data, "inputUid", "1000000000").toLong
+          val amount = ControllerHelper.getParam(data, "a", "0.0").toDouble
+          val currency: Currency = Currency.Eth
+
+          ethTxCollection.update(MongoDBObject("_id" -> ethId), $set("cps" -> "PROCESSING"), false, false, WriteConcern.Safe)
+          AccountService.deposit(uid, currency, amount) map { case result =>
+            if (result.success) {
+              val cptxid = result.data.get.asInstanceOf[RequestTransferSucceeded].transfer.id
+              ethTxCollection.update(MongoDBObject("_id" -> ethId),
+                $set("cps" -> "PROCESSED", "cptxid" -> cptxid, "cpuid" -> uid), false, false, WriteConcern.Safe)
+            } else {
+              ethTxCollection.update(MongoDBObject("_id" -> ethId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+            }
+            Ok(result.toJson)
+          }
+        }
+      }
+  }
+
+  def rejectEthTx(gid: String) = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+    val ethId = gid
+    val tx = ethTxCollection.findOne(MongoDBObject("_id" -> ethId))
+    if (!tx.isDefined) {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find eth tx: " + ethId).toJson))
+    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"eth tx ${ethId} can't be rejected").toJson))
+    } else {
+      ethTxCollection.update(MongoDBObject("_id" -> ethId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+      Future(Ok(ApiResult(true, ErrorCode.Ok.value, "eth tx ${ethId} is rejected").toJson))
+    }
   }
 
   def rejectGoocTx(gid: String) = Authenticated.async(parse.urlFormEncoded) { implicit request =>

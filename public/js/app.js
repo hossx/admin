@@ -75,7 +75,7 @@ app.filter('transferSign', function() {
     };
 });
 
-app.filter('goocTransferSign', function() {
+app.filter('handyTransferSign', function() {
     return function(input) {
         if (input == 'DEPOSIT') return '+';
         if (input == 'WITHDRAWAL') return '-';
@@ -131,6 +131,10 @@ function routeConfig($routeProvider) {
         when('/gooc', {
             controller: 'GoocCtrl',
             templateUrl: 'views/gooc.html'
+        }).
+        when('/eth', {
+            controller: 'EthCtrl',
+            templateUrl: 'views/eth.html'
         }).
         when('/monitor', {
             controller: 'MonitorCtrl',
@@ -331,7 +335,7 @@ app.controller('TransferCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.loadWallets = function() {
-        if ($scope.currency === 'CNY' || $scope.currency === 'GOOC')
+        if ($scope.currency === 'CNY' || $scope.currency === 'GOOC' || $scope.currency === 'ETH')
             return;
         $scope.addressUrl = COINPORT.addressUrl[$scope.currency];
         $http.get('/api/open/wallet/' + $scope.currency + '/hot')
@@ -480,6 +484,60 @@ app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
         $http.post('/gooctx/reject/' + item._id, {})
             .success(function(data, status, headers, config) {
                 setTimeout($scope.loadGoocTxs, 1000);
+            });
+    };
+}]);
+
+app.controller('EthCtrl', ['$scope', '$http', function($scope, $http) {
+    $scope.txStatus = [
+        {text: 'BAD_FORM',  value: 'BAD_FORM'},
+        {text: 'UNDER_LIMIT',  value: 'UNDER_LIMIT'},
+        {text: 'PENDING',   value: 'PENDING'},
+        {text: 'PROCESSING', value: 'PROCESSING'},
+        {text: 'PROCESSED', value: 'PROCESSED'},
+        {text: 'SUCCEEDED', value: 'SUCCEEDED'},
+        {text: 'FAILED',    value: 'FAILED'}];
+
+    $scope.transferTypes = [
+        {text: 'DEPOSIT', value: 'DEPOSIT'},
+        {text: 'WITHDRAWAL', value: 'WITHDRAWAL'}];
+
+    $scope.ethQuery = {page: 1, limit: 20};
+
+    $scope.loadEthTxs = function() {
+        $http.get('/ethtx/get', {params: $scope.ethQuery})
+            .success(function (data, status, headers, config) {
+                $scope.ethTxs = data.data;
+            });
+    };
+
+    $scope.loadEthTxs();
+
+    $scope.reload = function() {
+        $scope.loadEthTxs();
+    };
+
+    $scope.showButton = function(item) {
+        return ((item.cps == 'BAD_FORM' || item.cps == 'UNDER_LIMIT') && item.ty == 'DEPOSIT' && item.status != -1)
+    };
+
+    $scope.transferConfirm = function(item) {
+        item.status = -1;
+        if (!item.inputUid || item.inputUid == '') {
+            alert('请填入用户币丰港ID');
+        } else {
+            $http.post('/ethtx/confirm', $.param(item))
+                .success(function(data, status, headers, config) {
+                    setTimeout($scope.loadEthTxs, 1000);
+                });
+        }
+    };
+
+    $scope.transferReject = function(item) {
+        item.status = -1;
+        $http.post('/ethtx/reject/' + item._id, {})
+            .success(function(data, status, headers, config) {
+                setTimeout($scope.loadEthTxs, 1000);
             });
     };
 }]);
