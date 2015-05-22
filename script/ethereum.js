@@ -160,7 +160,9 @@ CryptoProxy.prototype.checkBlock_ = function() {
                 var time = new Date().getTime();
                 var high = parseInt(time / 0xffffffff);
                 var timeLong = mongodb.Long(time & 0xffffffff, high);
-                var tx = {_id: block.txs[i].txid, blockNum: blockHeight, inputAddr: block.txs[i].inputAddr, 
+                var blockNumHigh = parseInt(blockHeight / 0xffffffff);
+                var blockNumLong = mongodb.Long(blockHeight, blockNumHigh);
+                var tx = {_id: block.txs[i].txid, blockNum: blockNumLong, inputAddr: block.txs[i].inputAddr, 
                           outputAddr: block.txs[i].outputAddr, a: block.txs[i].amount,
                           c: block.txs[i].memo, ty: ty, cps: cps, t: timeLong};
                 self.insertTx_(tx);
