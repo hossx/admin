@@ -464,7 +464,9 @@ app.controller('GoocCtrl', ['$scope', '$http', function($scope, $http) {
     };
 
     $scope.showButton = function(item) {
-        return ((item.cps == 'BAD_FORM' || item.cps == 'UNDER_LIMIT') && item.ty == 'DEPOSIT' && item.status != -1)
+        return ((item.cps == 'BAD_FORM' ||
+            item.cps == 'UNDER_LIMIT' || item.cps == 'PROCESSING') &&
+            item.ty == 'DEPOSIT' && item.status != -1)
     };
 
     $scope.transferConfirm = function(item) {
