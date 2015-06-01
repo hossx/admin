@@ -217,7 +217,9 @@ object Admin extends Controller with Json4s {
         val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
         if (!tx.isDefined) {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
-        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
+        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" &&
+          tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT" &&
+          tx.get.get("cps").asInstanceOf[String] != "PROCESSING") {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be confirmed").toJson))
         } else {
           val uid = ControllerHelper.getParam(data, "inputUid", "1000000000").toLong
@@ -239,6 +241,21 @@ object Admin extends Controller with Json4s {
       }
   }
 
+  def rejectGoocTx(gid: String) = Authenticated.async(parse.urlFormEncoded) { implicit request =>
+    val goocId = new java.lang.Long(gid.toLong)
+    val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
+    if (!tx.isDefined) {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
+    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" &&
+      tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT" &&
+      tx.get.get("cps").asInstanceOf[String] != "PROCESSING") {
+      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be rejected").toJson))
+    } else {
+      txCollection.update(MongoDBObject("_id" -> goocId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
+      Future(Ok(ApiResult(true, ErrorCode.Ok.value, "gooc tx ${goocId} is rejected").toJson))
+    }
+  }
+
   def confirmEthTx() = Authenticated.async(parse.urlFormEncoded) { implicit request =>
       val data = request.body
       val ethId = ControllerHelper.getParam(data, "_id", "0")
@@ -248,7 +265,9 @@ object Admin extends Controller with Json4s {
         val tx = ethTxCollection.findOne(MongoDBObject("_id" -> ethId))
         if (!tx.isDefined) {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find eth tx: " + ethId).toJson))
-        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
+        } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" &&
+          tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT" &&
+          tx.get.get("cps").asInstanceOf[String] != "PROCESSING") {
           Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"eth tx ${ethId} can't be confirmed").toJson))
         } else {
           val uid = ControllerHelper.getParam(data, "inputUid", "1000000000").toLong
@@ -275,24 +294,13 @@ object Admin extends Controller with Json4s {
     val tx = ethTxCollection.findOne(MongoDBObject("_id" -> ethId))
     if (!tx.isDefined) {
       Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find eth tx: " + ethId).toJson))
-    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
+    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" &&
+      tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT" &&
+      tx.get.get("cps").asInstanceOf[String] != "PROCESSING") {
       Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"eth tx ${ethId} can't be rejected").toJson))
     } else {
       ethTxCollection.update(MongoDBObject("_id" -> ethId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
       Future(Ok(ApiResult(true, ErrorCode.Ok.value, "eth tx ${ethId} is rejected").toJson))
-    }
-  }
-
-  def rejectGoocTx(gid: String) = Authenticated.async(parse.urlFormEncoded) { implicit request =>
-    val goocId = new java.lang.Long(gid.toLong)
-    val tx = txCollection.findOne(MongoDBObject("_id" -> goocId))
-    if (!tx.isDefined) {
-      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, "can't find gooc tx: " + goocId).toJson))
-    } else if (tx.get.get("cps").asInstanceOf[String] != "BAD_FORM" && tx.get.get("cps").asInstanceOf[String] != "UNDER_LIMIT") {
-      Future(Ok(ApiResult(false, ErrorCode.ParamEmpty.value, s"gooc tx ${goocId} can't be rejected").toJson))
-    } else {
-      txCollection.update(MongoDBObject("_id" -> goocId), $set("cps" -> "FAILED"), false, false, WriteConcern.Safe)
-      Future(Ok(ApiResult(true, ErrorCode.Ok.value, "gooc tx ${goocId} is rejected").toJson))
     }
   }
 
