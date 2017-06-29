@@ -2,7 +2,6 @@
 logLevel := Level.Debug
 
 resolvers ++= Seq(
-  "Nexus Snapshots" at "http://192.168.0.105:8081/nexus/content/groups/public/",
   Resolver.sonatypeRepo("snapshots")
 )
 

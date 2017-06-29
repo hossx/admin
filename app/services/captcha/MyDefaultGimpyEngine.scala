@@ -54,14 +54,15 @@ class MyDefaultGimpyEngine extends ListImageCaptchaEngine {
 
   def buildInitialFactories() {
     val water: WaterFilter = new WaterFilter()
-    water.setAmplitude(3d)
-    water.setAntialias(true)
-    water.setPhase(20d)
-    water.setWavelength(70d)
+    water.setAmplitude(3f)
+    // water.setAntialias(true)
+    water.setPhase(20f)
+    water.setWavelength(70f)
 
     val backDef: ImageDeformation = new ImageDeformationByFilters(Array[ImageFilter]())
     val textDef: ImageDeformation = new ImageDeformationByFilters(Array[ImageFilter]())
-    val postDef: ImageDeformation = new ImageDeformationByFilters(Array[ImageFilter](water))
+    // val postDef: ImageDeformation = new ImageDeformationByFilters(Array[ImageFilter](water))
+    val postDef: ImageDeformation = new ImageDeformationByFilters(Array[ImageFilter]())
 
     //word generator
     val dictionnaryWords: WordGenerator = new ComposeDictionaryWordGenerator(

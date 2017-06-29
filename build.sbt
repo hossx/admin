@@ -12,7 +12,6 @@ lazy val root = (project in file("."))
 
 
 resolvers ++= Seq(
-  "Nexus Snapshots" at "http://192.168.0.105:8081/nexus/content/groups/public/",
   Resolver.sonatypeRepo("snapshots")
 )
 
@@ -34,7 +33,16 @@ libraryDependencies ++= {
     "com.typesafe.akka"           %% "akka-remote"                      % "2.3.4",
     "com.twilio.sdk"              %  "twilio-java-sdk"                  % "3.4.1",
     "net.debasishg"               %% "redisclient"                      % "2.12",
-    "com.octo.captcha"            %  "jcaptcha"                         % "1.0",
-    "com.cloopen"                 %  "restsdk"                          % "2.6.1"
+    // "com.octo.captcha"            %  "jcaptcha"                         % "1.0",
+    // "com.cloopen"                 %  "restsdk"                          % "2.6.1"
+    "cn.bestwu"                   %  "ccp-rest"                         % "2.7"
   )
 }
+
+// Imaging is rename to filters. So exclude imaging and import filters
+libraryDependencies += ("com.octo.captcha" % "jcaptcha" % "1.0")
+    .exclude("com.jhlabs", "imaging")
+
+libraryDependencies += ("com.jhlabs" % "filters" % "2.0.235-1")
+
+javaOptions in Test += "-Djava.library.path=/Users/chm/lib/jnotify-lib-0.94"
